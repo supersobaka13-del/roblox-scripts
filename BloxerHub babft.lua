@@ -22,7 +22,6 @@ local AuthCorner = Instance.new("UICorner")
 AuthCorner.CornerRadius = UDim.new(0, 10)
 AuthCorner.Parent = AuthFrame
 
--- Обводка окна (для стиля)
 local AuthStroke = Instance.new("UIStroke")
 AuthStroke.Color = Color3.fromRGB(40, 40, 48)
 AuthStroke.Thickness = 1
@@ -39,7 +38,6 @@ local TitleCorner = Instance.new("UICorner")
 TitleCorner.CornerRadius = UDim.new(0, 10)
 TitleCorner.Parent = TitleBar
 
--- Скрываем нижние углы заголовка для плавного перехода
 local TitleBlend = Instance.new("Frame")
 TitleBlend.Size = UDim2.new(1, 0, 0, 6)
 TitleBlend.Position = UDim2.new(0, 0, 1, -6)
@@ -56,7 +54,7 @@ TitleLabel.TextSize = 18
 TitleLabel.Font = Enum.Font.GothamBold
 TitleLabel.Parent = TitleBar
 
--- ===== ПОЛЕ ВВОДА (ИЗМЕНЕНО НА KEYPASS) =====
+-- ===== ПОЛЕ ВВОДА =====
 local InputBox = Instance.new("TextBox")
 InputBox.Size = UDim2.new(0, 220, 0, 40)
 InputBox.Position = UDim2.new(0.5, -110, 0, 75)
@@ -64,8 +62,8 @@ InputBox.BackgroundColor3 = Color3.fromRGB(20, 20, 26)
 InputBox.TextColor3 = Color3.fromRGB(255, 255, 255)
 InputBox.TextSize = 15
 InputBox.Font = Enum.Font.Gotham
-InputBox.Text = "" -- Очищаем стандартный текст
-InputBox.PlaceholderText = "Keypass" -- Устанавливаем плейсхолдер
+InputBox.Text = ""
+InputBox.PlaceholderText = "Keypass"
 InputBox.PlaceholderColor3 = Color3.fromRGB(130, 130, 140)
 InputBox.ClearTextOnFocus = false
 InputBox.Parent = AuthFrame
@@ -79,7 +77,7 @@ InputStroke.Color = Color3.fromRGB(50, 50, 60)
 InputStroke.Thickness = 1
 InputStroke.Parent = InputBox
 
--- ===== КНОПКА GET KEY =====
+-- ===== КНОПКИ =====
 local GetKeyBtn = Instance.new("TextButton")
 GetKeyBtn.Size = UDim2.new(0, 130, 0, 38)
 GetKeyBtn.Position = UDim2.new(0.5, -145, 0, 130)
@@ -95,10 +93,9 @@ local GetKeyCorner = Instance.new("UICorner")
 GetKeyCorner.CornerRadius = UDim.new(0, 6)
 GetKeyCorner.Parent = GetKeyBtn
 
--- ===== КНОПКА VERIFY =====
 local VerifyBtn = Instance.new("TextButton")
 VerifyBtn.Size = UDim2.new(0, 130, 0, 38)
-VerifyBtn.Position = UDim2.new(0.5, 15, 0, 130) -- Смещена вправо от центра
+VerifyBtn.Position = UDim2.new(0.5, 15, 0, 130)
 VerifyBtn.BackgroundColor3 = Color3.fromRGB(0, 125, 255)
 VerifyBtn.Text = "Verify"
 VerifyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -123,7 +120,7 @@ StatusAuth.Font = Enum.Font.Gotham
 StatusAuth.TextXAlignment = Enum.TextXAlignment.Center
 StatusAuth.Parent = AuthFrame
 
--- ===== HOVER ЭФФЕКТЫ (Анимация плавности) =====
+-- Hover эффекты
 local function hoverEffect(btn, hoverColor, normalColor)
     btn.MouseEnter:Connect(function()
         TweenService:Create(btn, TweenInfo.new(0.2), {BackgroundColor3 = hoverColor}):Play()
@@ -156,14 +153,16 @@ VerifyBtn.MouseButton1Click:Connect(function()
         StatusAuth.Text = "✅ Success! Loading hub..."
         StatusAuth.TextColor3 = Color3.fromRGB(0, 255, 0)
         task.wait(0.8)
-        AuthGui:Destroy() -- Закрываем окно
-        
-        -- ЗАГРУЗКА ОСНОВНОГО СКРИПТА BLOXER HUB
+        AuthGui:Destroy()
+
+        -- ==========================================================
+        -- ОСНОВНОЙ ХАБ (С ИСПРАВЛЕННОЙ СТАТИСТИКОЙ АВТОФАРМА)
+        -- ==========================================================
         local success, err = pcall(function()
             loadstring([[
-                -- Ваш оригинальный скрипт Bloxer Hub v1.0 находится здесь
-                -- (он остался полностью без изменений)
-                
+                -- =============================================================
+                -- BLOXER HUB v1.0 (С ИСПРАВЛЕННОЙ СТАТИСТИКОЙ АВТОФАРМА)
+                -- =============================================================
                 local Players = game:GetService("Players")
                 local RunService = game:GetService("RunService")
                 local TweenService = game:GetService("TweenService")
@@ -172,6 +171,7 @@ VerifyBtn.MouseButton1Click:Connect(function()
                 local Workspace = game:GetService("Workspace")
                 local Camera = Workspace.CurrentCamera
                 local StarterGui = game:GetService("StarterGui")
+                local TeleportService = game:GetService("TeleportService")
 
                 local MAX_DISTANCE = 5000
 
@@ -185,13 +185,30 @@ VerifyBtn.MouseButton1Click:Connect(function()
                     })
                 end
 
-                -- ===================== GUI =====================
+                -- ===================== ПОЛУЧЕНИЕ ЗОЛОТА (ИСПРАВЛЕНО) =====================
+                local function getGold()
+                    -- Сначала ищем в Data.Gold
+                    local data = LocalPlayer:FindFirstChild("Data")
+                    if data then
+                        local gold = data:FindFirstChild("Gold")
+                        if gold then return gold.Value end
+                    end
+                    -- Если нет, ищем в leaderstats
+                    local stats = LocalPlayer:FindFirstChild("leaderstats")
+                    if stats then
+                        local gold = stats:FindFirstChild("Gold") or stats:FindFirstChild("Coins")
+                        if gold then return gold.Value end
+                    end
+                    return 0
+                end
+
+                -- ===================== GUI ХАБА =====================
                 local ScreenGui = Instance.new("ScreenGui")
                 ScreenGui.Name = "BloxerHub"
                 ScreenGui.ResetOnSpawn = false
                 ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
 
-                -- ===== ГЛАВНАЯ ПАНЕЛЬ (центрирована) =====
+                -- ===== ГЛАВНАЯ ПАНЕЛЬ =====
                 local MainFrame = Instance.new("Frame")
                 MainFrame.Size = UDim2.new(0, 320, 0, 460)
                 MainFrame.Position = UDim2.new(0.5, -160, 0.5, -230)
@@ -284,7 +301,6 @@ VerifyBtn.MouseButton1Click:Connect(function()
                 cornerS.CornerRadius = UDim.new(1, 0)
                 cornerS.Parent = SettingsNavBtn
 
-                -- Hover-эффекты
                 local function setupNavHover(btn)
                     btn.MouseEnter:Connect(function()
                         TweenService:Create(btn, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(45, 45, 60)}):Play()
@@ -297,7 +313,6 @@ VerifyBtn.MouseButton1Click:Connect(function()
                 setupNavHover(OtherNavBtn)
                 setupNavHover(SettingsNavBtn)
 
-                -- Заголовок: BLOXER HUB: babft, сдвинут влево (X=15)
                 local TitleLabel = Instance.new("TextLabel")
                 TitleLabel.Size = UDim2.new(0, 200, 1, 0)
                 TitleLabel.Position = UDim2.new(0, 15, 0, 0)
@@ -578,7 +593,9 @@ VerifyBtn.MouseButton1Click:Connect(function()
                 ToggleCornerBtnSpectator.CornerRadius = UDim.new(0, 3)
                 ToggleCornerBtnSpectator.Parent = ToggleButtonSpectator
 
-                -- Auto Farm Toggle
+                -- ============================================================
+                -- AUTO FARM TOGGLE + ИСПРАВЛЕННАЯ СТАТИСТИКА
+                -- ============================================================
                 local ToggleFrameFarm = Instance.new("Frame")
                 ToggleFrameFarm.Size = UDim2.new(1, 0, 0, 34)
                 ToggleFrameFarm.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
@@ -638,15 +655,383 @@ VerifyBtn.MouseButton1Click:Connect(function()
                 ToggleCornerBtnFarm.CornerRadius = UDim.new(0, 3)
                 ToggleCornerBtnFarm.Parent = ToggleButtonFarm
 
-                local StatusLabel = Instance.new("TextLabel")
-                StatusLabel.Size = UDim2.new(1, 0, 0, 14)
-                StatusLabel.BackgroundTransparency = 1
-                StatusLabel.Text = ""
-                StatusLabel.TextColor3 = Color3.fromRGB(120, 220, 120)
-                StatusLabel.TextSize = 10
-                StatusLabel.Font = Enum.Font.SourceSans
-                StatusLabel.TextXAlignment = Enum.TextXAlignment.Left
-                StatusLabel.Parent = MainPage
+                -- ============================================================
+                -- НОВАЯ СТАТИСТИКА АВТОФАРМА (GUI) – ИСПРАВЛЕНО
+                -- ============================================================
+                local farmStatsGui = nil
+                local farmStatsFrame = nil
+                local farmTimerLabel, farmGoldLabel, farmProgressFill, farmGoalLabel, farmGoalInput, farmSetGoalBtn
+                local farmStartTime, farmStartGold, farmEarnedGold, farmGoal, farmGoalReached = 0, 0, 0, nil, false
+                local farmUpdateConnection = nil
+                local farmRunning = false
+
+                local function createFarmStats()
+                    if farmStatsGui then return end
+                    farmStatsGui = Instance.new("ScreenGui")
+                    farmStatsGui.Name = "FarmStats"
+                    farmStatsGui.ResetOnSpawn = false
+                    farmStatsGui.Parent = LocalPlayer.PlayerGui
+
+                    farmStatsFrame = Instance.new("Frame")
+                    farmStatsFrame.Size = UDim2.new(0, 280, 0, 210)
+                    farmStatsFrame.Position = UDim2.new(0.8, -140, 0.2, 0) -- справа сверху
+                    farmStatsFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
+                    farmStatsFrame.BorderSizePixel = 1
+                    farmStatsFrame.BorderColor3 = Color3.fromRGB(40, 40, 48)
+                    farmStatsFrame.Active = true
+                    farmStatsFrame.Draggable = true
+                    farmStatsFrame.Parent = farmStatsGui
+                    local frameCorner = Instance.new("UICorner")
+                    frameCorner.CornerRadius = UDim.new(0, 8)
+                    frameCorner.Parent = farmStatsFrame
+
+                    -- Заголовок
+                    local title = Instance.new("TextLabel")
+                    title.Size = UDim2.new(1, 0, 0, 30)
+                    title.BackgroundColor3 = Color3.fromRGB(18, 18, 23)
+                    title.Text = "Auto Farm Stats"
+                    title.TextColor3 = Color3.fromRGB(255, 255, 255)
+                    title.TextSize = 14
+                    title.Font = Enum.Font.GothamBold
+                    title.Parent = farmStatsFrame
+                    local titleCorner = Instance.new("UICorner")
+                    titleCorner.CornerRadius = UDim.new(0, 8)
+                    titleCorner.Parent = title
+
+                    -- Таймер (по центру)
+                    farmTimerLabel = Instance.new("TextLabel")
+                    farmTimerLabel.Size = UDim2.new(1, 0, 0, 25)
+                    farmTimerLabel.Position = UDim2.new(0, 0, 0, 34)
+                    farmTimerLabel.BackgroundTransparency = 1
+                    farmTimerLabel.Text = "Time: 00:00"
+                    farmTimerLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+                    farmTimerLabel.TextSize = 13
+                    farmTimerLabel.Font = Enum.Font.Gotham
+                    farmTimerLabel.TextXAlignment = Enum.TextXAlignment.Center
+                    farmTimerLabel.Parent = farmStatsFrame
+
+                    -- Счётчик голды (под таймером)
+                    farmGoldLabel = Instance.new("TextLabel")
+                    farmGoldLabel.Size = UDim2.new(1, 0, 0, 25)
+                    farmGoldLabel.Position = UDim2.new(0, 0, 0, 59)
+                    farmGoldLabel.BackgroundTransparency = 1
+                    farmGoldLabel.Text = "Gold: 0"
+                    farmGoldLabel.TextColor3 = Color3.fromRGB(255, 215, 0)
+                    farmGoldLabel.TextSize = 13
+                    farmGoldLabel.Font = Enum.Font.GothamBold
+                    farmGoldLabel.TextXAlignment = Enum.TextXAlignment.Center
+                    farmGoldLabel.Parent = farmStatsFrame
+
+                    -- Полоска прогресса (снизу)
+                    local progressBg = Instance.new("Frame")
+                    progressBg.Size = UDim2.new(0.9, 0, 0, 16)
+                    progressBg.Position = UDim2.new(0.05, 0, 0, 92)
+                    progressBg.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+                    progressBg.BorderSizePixel = 0
+                    progressBg.Parent = farmStatsFrame
+                    local bgCorner = Instance.new("UICorner")
+                    bgCorner.CornerRadius = UDim.new(0, 4)
+                    bgCorner.Parent = progressBg
+
+                    farmProgressFill = Instance.new("Frame")
+                    farmProgressFill.Size = UDim2.new(0, 0, 1, 0)
+                    farmProgressFill.BackgroundColor3 = Color3.fromRGB(0, 125, 255)
+                    farmProgressFill.BorderSizePixel = 0
+                    farmProgressFill.Parent = progressBg
+                    local fillCorner = Instance.new("UICorner")
+                    fillCorner.CornerRadius = UDim.new(0, 4)
+                    fillCorner.Parent = farmProgressFill
+
+                    -- Текст цели
+                    farmGoalLabel = Instance.new("TextLabel")
+                    farmGoalLabel.Size = UDim2.new(1, 0, 0, 20)
+                    farmGoalLabel.Position = UDim2.new(0, 0, 0, 114)
+                    farmGoalLabel.BackgroundTransparency = 1
+                    farmGoalLabel.Text = "Goal: Not set"
+                    farmGoalLabel.TextColor3 = Color3.fromRGB(180, 180, 200)
+                    farmGoalLabel.TextSize = 11
+                    farmGoalLabel.Font = Enum.Font.Gotham
+                    farmGoalLabel.TextXAlignment = Enum.TextXAlignment.Center
+                    farmGoalLabel.Parent = farmStatsFrame
+
+                    -- Поле ввода цели (теперь текст "0" по умолчанию)
+                    farmGoalInput = Instance.new("TextBox")
+                    farmGoalInput.Size = UDim2.new(0, 100, 0, 24)
+                    farmGoalInput.Position = UDim2.new(0.05, 0, 0, 138)
+                    farmGoalInput.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+                    farmGoalInput.TextColor3 = Color3.fromRGB(255, 255, 255)
+                    farmGoalInput.TextSize = 13
+                    farmGoalInput.Font = Enum.Font.Gotham
+                    farmGoalInput.Text = "0"  -- <-- ИСПРАВЛЕНО: теперь 0
+                    farmGoalInput.ClearTextOnFocus = false
+                    farmGoalInput.Parent = farmStatsFrame
+                    local inputCorner = Instance.new("UICorner")
+                    inputCorner.CornerRadius = UDim.new(0, 4)
+                    inputCorner.Parent = farmGoalInput
+
+                    farmSetGoalBtn = Instance.new("TextButton")
+                    farmSetGoalBtn.Size = UDim2.new(0, 70, 0, 24)
+                    farmSetGoalBtn.Position = UDim2.new(0.55, 0, 0, 138)
+                    farmSetGoalBtn.BackgroundColor3 = Color3.fromRGB(40, 160, 80)
+                    farmSetGoalBtn.Text = "Set Goal"
+                    farmSetGoalBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+                    farmSetGoalBtn.TextSize = 12
+                    farmSetGoalBtn.Font = Enum.Font.GothamBold
+                    farmSetGoalBtn.BorderSizePixel = 0
+                    farmSetGoalBtn.AutoButtonColor = false
+                    farmSetGoalBtn.Parent = farmStatsFrame
+                    local btnCorner = Instance.new("UICorner")
+                    btnCorner.CornerRadius = UDim.new(0, 4)
+                    btnCorner.Parent = farmSetGoalBtn
+
+                    -- Обработчики
+                    farmSetGoalBtn.MouseButton1Click:Connect(function()
+                        local val = tonumber(farmGoalInput.Text)
+                        if val and val > 0 then
+                            farmGoal = val
+                            farmGoalReached = false
+                            sendNotification("Goal set to +" .. val, 2)
+                            updateFarmStats()
+                        else
+                            sendNotification("Enter a positive number", 2)
+                        end
+                    end)
+
+                    farmGoalInput.FocusLost:Connect(function(enter)
+                        if enter then farmSetGoalBtn.MouseButton1Click:Fire() end
+                    end)
+
+                    -- Кнопка закрыть (скрывает окно, но фарм продолжается)
+                    local closeStatsBtn = Instance.new("TextButton")
+                    closeStatsBtn.Size = UDim2.new(0, 20, 0, 20)
+                    closeStatsBtn.Position = UDim2.new(1, -24, 0, 4)
+                    closeStatsBtn.BackgroundColor3 = Color3.fromRGB(180, 40, 40)
+                    closeStatsBtn.BorderSizePixel = 0
+                    closeStatsBtn.Text = "✕"
+                    closeStatsBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+                    closeStatsBtn.TextSize = 12
+                    closeStatsBtn.Font = Enum.Font.SourceSansBold
+                    closeStatsBtn.AutoButtonColor = false
+                    closeStatsBtn.Parent = farmStatsFrame
+                    local closeCorner = Instance.new("UICorner")
+                    closeCorner.CornerRadius = UDim.new(0, 4)
+                    closeCorner.Parent = closeStatsBtn
+                    closeStatsBtn.MouseButton1Click:Connect(function()
+                        if farmStatsFrame then farmStatsFrame.Visible = false end
+                    end)
+                end
+
+                local function destroyFarmStats()
+                    if farmStatsGui then
+                        farmStatsGui:Destroy()
+                        farmStatsGui = nil
+                        farmStatsFrame = nil
+                        farmTimerLabel = nil
+                        farmGoldLabel = nil
+                        farmProgressFill = nil
+                        farmGoalLabel = nil
+                        farmGoalInput = nil
+                        farmSetGoalBtn = nil
+                    end
+                end
+
+                -- ИСПРАВЛЕНО: логика подсчёта прироста
+                local function updateFarmStats()
+                    if not farmStatsFrame or not farmTimerLabel then return end
+                    local currentGold = getGold()
+                    farmEarnedGold = currentGold - farmStartGold
+                    if farmEarnedGold < 0 then farmEarnedGold = 0 end
+
+                    local elapsed = os.time() - farmStartTime
+                    local mins = math.floor(elapsed / 60)
+                    local secs = elapsed % 60
+                    farmTimerLabel.Text = string.format("Time: %02d:%02d", mins, secs)
+                    farmGoldLabel.Text = "Gold: " .. farmEarnedGold
+
+                    if farmGoal and farmGoal > 0 then
+                        local progress = math.min(farmEarnedGold / farmGoal, 1)
+                        farmProgressFill.Size = UDim2.new(progress, 0, 1, 0)
+                        farmGoalLabel.Text = "Goal: " .. farmEarnedGold .. " / " .. farmGoal
+                        if not farmGoalReached and farmEarnedGold >= farmGoal then
+                            farmGoalReached = true
+                            sendNotification("Goal reached! Kicking...", 3)
+                            task.wait(1)
+                            LocalPlayer:Kick("Goal reached!")   -- <-- сообщение на английском
+                        end
+                    else
+                        farmProgressFill.Size = UDim2.new(0, 0, 1, 0)
+                        farmGoalLabel.Text = "Goal: Not set"
+                    end
+                end
+
+                -- ============================================================
+                -- ЛОГИКА АВТОФАРМА (с интеграцией статистики)
+                -- ============================================================
+                local autoFarmEnabled = false
+                local farmTask = nil
+                local farmRunning = false
+
+                local function resetGravity()
+                    Workspace.Gravity = 196.2
+                end
+
+                local function getPart(path)
+                    local parts = {}
+                    for partName in string.gmatch(path, "[^%.]+") do
+                        table.insert(parts, partName)
+                    end
+                    local current = Workspace
+                    for _, name in ipairs(parts) do
+                        current = current and current:FindFirstChild(name)
+                        if not current then break end
+                    end
+                    return current
+                end
+
+                local function flyTo(targetPosition, duration)
+                    local char = LocalPlayer.Character
+                    if not char then return false end
+                    local hrp = char:FindFirstChild("HumanoidRootPart")
+                    if not hrp then return false end
+                    hrp.Velocity = Vector3.new(0, 0, 0)
+                    hrp.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+                    local targetCFrame = CFrame.new(targetPosition)
+                    local tweenInfo = TweenInfo.new(duration, Enum.EasingStyle.Linear)
+                    local tween = TweenService:Create(hrp, tweenInfo, {CFrame = targetCFrame})
+                    tween:Play()
+                    local completed = false
+                    tween.Completed:Connect(function()
+                        completed = true
+                    end)
+                    while not completed and autoFarmEnabled and farmRunning do
+                        task.wait(0.05)
+                    end
+                    return completed
+                end
+
+                local function waitForRespawn()
+                    local char = LocalPlayer.Character
+                    if char and char:FindFirstChild("HumanoidRootPart") and char:FindFirstChildOfClass("Humanoid") and char.Humanoid.Health > 0 then
+                        return true
+                    end
+                    local respawned = false
+                    local event = LocalPlayer.CharacterAdded:Connect(function()
+                        respawned = true
+                        event:Disconnect()
+                    end)
+                    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and LocalPlayer.Character:FindFirstChildOfClass("Humanoid") and LocalPlayer.Character.Humanoid.Health > 0 then
+                        respawned = true
+                        event:Disconnect()
+                    end
+                    while not respawned and autoFarmEnabled and farmRunning do
+                        task.wait(0.2)
+                        if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and LocalPlayer.Character:FindFirstChildOfClass("Humanoid") and LocalPlayer.Character.Humanoid.Health > 0 then
+                            respawned = true
+                            event:Disconnect()
+                            break
+                        end
+                    end
+                    return respawned
+                end
+
+                local function farmLoop()
+                    farmRunning = true
+                    while autoFarmEnabled and farmRunning do
+                        local char = LocalPlayer.Character
+                        while not char or not char:FindFirstChild("HumanoidRootPart") or not char:FindFirstChildOfClass("Humanoid") or char.Humanoid.Health <= 0 do
+                            if not autoFarmEnabled or not farmRunning then return end
+                            char = LocalPlayer.Character
+                            task.wait(0.5)
+                        end
+
+                        Workspace.Gravity = 0
+
+                        for stage = 1, 10 do
+                            if not autoFarmEnabled or not farmRunning then break end
+                            local path = "BoatStages.NormalStages.CaveStage" .. stage .. ".DarknessPart"
+                            local part = getPart(path)
+                            if part then
+                                FarmStatusLabel.Text = "Flying to stage " .. stage
+                                local success = flyTo(part.Position, 1.25)
+                                if success then
+                                    task.wait(1.5)
+                                else
+                                    FarmStatusLabel.Text = "Flight failed, retrying..."
+                                    task.wait(1)
+                                end
+                            else
+                                FarmStatusLabel.Text = "Stage " .. stage .. " not found"
+                                task.wait(1)
+                            end
+                        end
+
+                        if not autoFarmEnabled or not farmRunning then break end
+
+                        local currentChar = LocalPlayer.Character
+                        local hum = currentChar and currentChar:FindFirstChildOfClass("Humanoid")
+                        if hum then
+                            hum.Health = 0
+                            FarmStatusLabel.Text = "Killed, respawning..."
+                        end
+
+                        local respawnSuccess = waitForRespawn()
+                        if respawnSuccess then
+                            FarmStatusLabel.Text = "Respawned, restarting cycle..."
+                        else
+                            FarmStatusLabel.Text = "Respawn failed, stopping farm"
+                            break
+                        end
+                    end
+                    farmRunning = false
+                    resetGravity()
+                    FarmStatusLabel.Text = "Idle"
+                end
+
+                local function setAutoFarm(state)
+                    autoFarmEnabled = state
+                    ToggleButtonFarm.Text = state and "ON" or "OFF"
+                    ToggleButtonFarm.BackgroundColor3 = state and Color3.fromRGB(30, 180, 30) or Color3.fromRGB(180, 40, 40)
+                    if state then
+                        -- Запускаем статистику
+                        farmStartGold = getGold()
+                        farmStartTime = os.time()
+                        farmEarnedGold = 0
+                        farmGoalReached = false
+                        createFarmStats()
+                        if farmStatsFrame then farmStatsFrame.Visible = true end
+                        if farmUpdateConnection then farmUpdateConnection:Disconnect() end
+                        farmUpdateConnection = RunService.Heartbeat:Connect(function()
+                            if autoFarmEnabled then updateFarmStats() end
+                        end)
+                        sendNotification("Auto Farm Enabled", 2)
+                        FarmStatusLabel.Text = "Starting..."
+                        if farmTask then
+                            task.cancel(farmTask)
+                            farmTask = nil
+                        end
+                        farmTask = task.spawn(farmLoop)
+                    else
+                        -- Останавливаем статистику
+                        if farmUpdateConnection then
+                            farmUpdateConnection:Disconnect()
+                            farmUpdateConnection = nil
+                        end
+                        destroyFarmStats()
+                        sendNotification("Auto Farm Disabled", 2)
+                        farmRunning = false
+                        if farmTask then
+                            task.cancel(farmTask)
+                            farmTask = nil
+                        end
+                        resetGravity()
+                        FarmStatusLabel.Text = "Stopped"
+                        farmGoal = nil
+                    end
+                end
+
+                ToggleButtonFarm.MouseButton1Click:Connect(function()
+                    setAutoFarm(not autoFarmEnabled)
+                end)
 
                 -- ============================================================
                 -- СТРАНИЦА OTHER (Noclip + Inf Jump + Teleport Teams)
@@ -721,7 +1106,7 @@ VerifyBtn.MouseButton1Click:Connect(function()
                 ToggleCornerBtnNoclip.CornerRadius = UDim.new(0, 3)
                 ToggleCornerBtnNoclip.Parent = ToggleButtonNoclip
 
-                -- Inf Jump Toggle (ИСПРАВЛЕННЫЙ – работает при зажатии)
+                -- Inf Jump Toggle
                 local ToggleFrameInfJump = Instance.new("Frame")
                 ToggleFrameInfJump.Size = UDim2.new(1, 0, 0, 34)
                 ToggleFrameInfJump.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
@@ -842,7 +1227,7 @@ VerifyBtn.MouseButton1Click:Connect(function()
                 ToggleCornerBtnTeleport.Parent = ToggleButtonTeleport
 
                 -- ============================================================
-                -- GUI для телепорта на команды (реальные названия зон)
+                -- GUI для телепорта на команды
                 -- ============================================================
                 local TeleportGUI = Instance.new("Frame")
                 TeleportGUI.Size = UDim2.new(0, 400, 0, 60)
@@ -888,7 +1273,6 @@ VerifyBtn.MouseButton1Click:Connect(function()
                 ColorsLayout.Padding = UDim.new(0, 6)
                 ColorsLayout.Parent = ColorsFrame
 
-                -- Реальные названия зон (Build a Boat for Treasure)
                 local teamData = {
                     {Name = "CamoZone", Color = Color3.fromRGB(0, 255, 0)},
                     {Name = "BlackZone", Color = Color3.fromRGB(0, 0, 0)},
@@ -1452,157 +1836,6 @@ VerifyBtn.MouseButton1Click:Connect(function()
                 updateInfo()
 
                 -- ============================================================
-                -- AUTO FARM SYSTEM
-                -- ============================================================
-                local autoFarmEnabled = false
-                local farmTask = nil
-                local farmRunning = false
-
-                local function resetGravity()
-                    Workspace.Gravity = 196.2
-                end
-
-                local function getPart(path)
-                    local parts = {}
-                    for partName in string.gmatch(path, "[^%.]+") do
-                        table.insert(parts, partName)
-                    end
-                    local current = Workspace
-                    for _, name in ipairs(parts) do
-                        current = current and current:FindFirstChild(name)
-                        if not current then break end
-                    end
-                    return current
-                end
-
-                local function flyTo(targetPosition, duration)
-                    local char = LocalPlayer.Character
-                    if not char then return false end
-                    local hrp = char:FindFirstChild("HumanoidRootPart")
-                    if not hrp then return false end
-                    hrp.Velocity = Vector3.new(0, 0, 0)
-                    hrp.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
-                    local targetCFrame = CFrame.new(targetPosition)
-                    local tweenInfo = TweenInfo.new(duration, Enum.EasingStyle.Linear)
-                    local tween = TweenService:Create(hrp, tweenInfo, {CFrame = targetCFrame})
-                    tween:Play()
-                    local completed = false
-                    tween.Completed:Connect(function()
-                        completed = true
-                    end)
-                    while not completed and autoFarmEnabled and farmRunning do
-                        task.wait(0.05)
-                    end
-                    return completed
-                end
-
-                local function waitForRespawn()
-                    local char = LocalPlayer.Character
-                    if char and char:FindFirstChild("HumanoidRootPart") and char:FindFirstChildOfClass("Humanoid") and char.Humanoid.Health > 0 then
-                        return true
-                    end
-                    local respawned = false
-                    local event = LocalPlayer.CharacterAdded:Connect(function()
-                        respawned = true
-                        event:Disconnect()
-                    end)
-                    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and LocalPlayer.Character:FindFirstChildOfClass("Humanoid") and LocalPlayer.Character.Humanoid.Health > 0 then
-                        respawned = true
-                        event:Disconnect()
-                    end
-                    while not respawned and autoFarmEnabled and farmRunning do
-                        task.wait(0.2)
-                        if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and LocalPlayer.Character:FindFirstChildOfClass("Humanoid") and LocalPlayer.Character.Humanoid.Health > 0 then
-                            respawned = true
-                            event:Disconnect()
-                            break
-                        end
-                    end
-                    return respawned
-                end
-
-                local function farmLoop()
-                    farmRunning = true
-                    while autoFarmEnabled and farmRunning do
-                        local char = LocalPlayer.Character
-                        while not char or not char:FindFirstChild("HumanoidRootPart") or not char:FindFirstChildOfClass("Humanoid") or char.Humanoid.Health <= 0 do
-                            if not autoFarmEnabled or not farmRunning then return end
-                            char = LocalPlayer.Character
-                            task.wait(0.5)
-                        end
-
-                        Workspace.Gravity = 0
-
-                        for stage = 1, 10 do
-                            if not autoFarmEnabled or not farmRunning then break end
-                            local path = "BoatStages.NormalStages.CaveStage" .. stage .. ".DarknessPart"
-                            local part = getPart(path)
-                            if part then
-                                FarmStatusLabel.Text = "Flying to stage " .. stage
-                                local success = flyTo(part.Position, 1.25)
-                                if success then
-                                    task.wait(1.5)
-                                else
-                                    FarmStatusLabel.Text = "Flight failed, retrying..."
-                                    task.wait(1)
-                                end
-                            else
-                                FarmStatusLabel.Text = "Stage " .. stage .. " not found"
-                                task.wait(1)
-                            end
-                        end
-
-                        if not autoFarmEnabled or not farmRunning then break end
-
-                        local currentChar = LocalPlayer.Character
-                        local hum = currentChar and currentChar:FindFirstChildOfClass("Humanoid")
-                        if hum then
-                            hum.Health = 0
-                            FarmStatusLabel.Text = "Killed, respawning..."
-                        end
-
-                        local respawnSuccess = waitForRespawn()
-                        if respawnSuccess then
-                            FarmStatusLabel.Text = "Respawned, restarting cycle..."
-                        else
-                            FarmStatusLabel.Text = "Respawn failed, stopping farm"
-                            break
-                        end
-                    end
-                    farmRunning = false
-                    resetGravity()
-                    FarmStatusLabel.Text = "Idle"
-                end
-
-                local function setAutoFarm(state)
-                    autoFarmEnabled = state
-                    ToggleButtonFarm.Text = state and "ON" or "OFF"
-                    ToggleButtonFarm.BackgroundColor3 = state and Color3.fromRGB(30, 180, 30) or Color3.fromRGB(180, 40, 40)
-                    if state then
-                        sendNotification("Auto Farm Enabled", 2)
-                        FarmStatusLabel.Text = "Starting..."
-                        if farmTask then
-                            task.cancel(farmTask)
-                            farmTask = nil
-                        end
-                        farmTask = task.spawn(farmLoop)
-                    else
-                        sendNotification("Auto Farm Disabled", 2)
-                        farmRunning = false
-                        if farmTask then
-                            task.cancel(farmTask)
-                            farmTask = nil
-                        end
-                        resetGravity()
-                        FarmStatusLabel.Text = "Stopped"
-                    end
-                end
-
-                ToggleButtonFarm.MouseButton1Click:Connect(function()
-                    setAutoFarm(not autoFarmEnabled)
-                end)
-
-                -- ============================================================
                 -- СПЕКТАТОР СИСТЕМА
                 -- ============================================================
                 local spectatorFunctionEnabled = false
@@ -1886,12 +2119,13 @@ VerifyBtn.MouseButton1Click:Connect(function()
                 end)
 
                 -- ============================================================
-                -- INF JUMP (ИСПРАВЛЕННЫЙ – РАБОТАЕТ ПРИ ЗАЖАТИИ)
+                -- INF JUMP (РАБОТАЕТ ПРИ ЗАЖАТИИ)
                 -- ============================================================
                 local infJumpEnabled = false
                 local infJumpBeganConnection = nil
                 local infJumpEndedConnection = nil
                 local jumpHeld = false
+                local infJumpConnection = nil
 
                 local function startJump()
                     if not infJumpEnabled then return end
@@ -1927,7 +2161,6 @@ VerifyBtn.MouseButton1Click:Connect(function()
                                 jumpHeld = false
                             end
                         end)
-                        -- Запускаем цикл для повторных прыжков при зажатии
                         if not infJumpConnection then
                             infJumpConnection = RunService.Heartbeat:Connect(function()
                                 if infJumpEnabled and jumpHeld then
@@ -1943,8 +2176,6 @@ VerifyBtn.MouseButton1Click:Connect(function()
                         jumpHeld = false
                     end
                 end
-
-                local infJumpConnection = nil
 
                 ToggleButtonInfJump.MouseButton1Click:Connect(function()
                     setInfJump(not infJumpEnabled)
@@ -2069,6 +2300,7 @@ VerifyBtn.MouseButton1Click:Connect(function()
                         SpectatorStatusLabel.Text = "Off"
                     end
                     resetGravity()
+                    destroyFarmStats()
                     ScreenGui:Destroy()
                 end
 
@@ -2095,7 +2327,7 @@ VerifyBtn.MouseButton1Click:Connect(function()
                 SwitchPage("Main")
                 applyCharacterSettings()
                 updateCanvasSize()
-                print("Bloxer Hub v1.0 loaded – Inf Jump работает при зажатии, заголовок обновлён.")
+                print("Bloxer Hub v1.0 loaded – с исправленной статистикой автофарма.")
             ]])()
         end)
         
@@ -2112,12 +2344,11 @@ VerifyBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- Нажатие Enter в поле ввода срабатывает как Verify
+-- Нажатие Enter в поле ввода
 InputBox.FocusLost:Connect(function(enterPressed)
     if enterPressed then
         VerifyBtn.MouseButton1Click:Fire()
     end
 end)
 
--- Инициализация
 print("Bloxer Hub Auth system loaded. Enter key 'BloxerHub'.")
