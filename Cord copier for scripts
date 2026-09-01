@@ -1,0 +1,1184 @@
+-- // ONYX v67 | COORDINATE COPIER v2
+-- // FIX: кнопки видны + ScrollingFrame + вкладка PROTECT
+
+local Players          = game:GetService("Players")
+local TweenService     = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
+local RunService       = game:GetService("RunService")
+local lp               = Players.LocalPlayer
+
+-- ============================================================
+-- HELPERS
+-- ============================================================
+
+local function corner(r,p)
+    local c=Instance.new("UICorner") c.CornerRadius=UDim.new(0,r) c.Parent=p return c
+end
+local function stroke(col,th,tr,p)
+    local s=Instance.new("UIStroke") s.Color=col s.Thickness=th s.Transparency=tr s.Parent=p return s
+end
+local function gradSeq(seq,rot,p)
+    local g=Instance.new("UIGradient") g.Color=seq g.Rotation=rot g.Parent=p return g
+end
+local function grad2(c0,c1,rot,p)
+    return gradSeq(ColorSequence.new(c0,c1),rot,p)
+end
+local function mkframe(props)
+    local f=Instance.new("Frame") f.BorderSizePixel=0
+    for k,v in pairs(props) do if k~="Parent" then f[k]=v end end
+    f.Parent=props.Parent return f
+end
+local function mklabel(props)
+    local l=Instance.new("TextLabel") l.BackgroundTransparency=1 l.BorderSizePixel=0
+    for k,v in pairs(props) do if k~="Parent" then l[k]=v end end
+    l.Parent=props.Parent return l
+end
+local function mkbtn(props)
+    local b=Instance.new("TextButton") b.BorderSizePixel=0
+    for k,v in pairs(props) do if k~="Parent" then b[k]=v end end
+    b.Parent=props.Parent return b
+end
+
+-- ============================================================
+-- PALETTE
+-- ============================================================
+
+local C={
+    void    = Color3.fromRGB(6,4,16),
+    deep    = Color3.fromRGB(10,6,28),
+    panel   = Color3.fromRGB(14,9,38),
+    card    = Color3.fromRGB(18,12,48),
+    cardHov = Color3.fromRGB(24,16,62),
+    acc1    = Color3.fromRGB(120,60,255),
+    acc2    = Color3.fromRGB(180,90,255),
+    acc3    = Color3.fromRGB(220,130,255),
+    pink    = Color3.fromRGB(255,80,180),
+    cyan    = Color3.fromRGB(80,200,255),
+    gold    = Color3.fromRGB(255,200,60),
+    green   = Color3.fromRGB(80,255,160),
+    red     = Color3.fromRGB(255,70,90),
+    txtMain = Color3.fromRGB(235,225,255),
+    txtMute = Color3.fromRGB(90,70,140),
+    white   = Color3.fromRGB(255,255,255),
+    invis   = Color3.fromRGB(0,0,0),
+}
+
+-- ============================================================
+-- PROTECT CONFIG
+-- ============================================================
+
+local PROTECT = {
+    AntiKnockback = false,
+    AntiRagdoll   = false,
+    AntiFall      = false,
+    AntiGrab      = false,
+}
+
+local protectConns = {}
+
+local function disconnectProtect()
+    for _,c in ipairs(protectConns) do
+        pcall(function() c:Disconnect() end)
+    end
+    protectConns = {}
+end
+
+local function getChar()
+    return lp.Character
+end
+local function getHum()
+    local ch = getChar()
+    return ch and ch:FindFirstChildOfClass("Humanoid")
+end
+local function getHRP()
+    local ch = getChar()
+    return ch and ch:FindFirstChild("HumanoidRootPart")
+end
+
+local antiFallConn = nil
+local savedPos = nil
+
+local function applyProtect()
+    disconnectProtect()
+
+    local ch = getChar()
+    if not ch then return end
+    local hum = getHum()
+    local hrp = getHRP()
+
+    -- ANTI KNOCKBACK
+    -- уничтожаем BodyVelocity / LinearVelocity / BodyForce как только появляются
+    if PROTECT.AntiKnockback then
+        local conn = ch.DescendantAdded:Connect(function(obj)
+            if obj:IsA("BodyVelocity")
+            or obj:IsA("BodyAngularVelocity")
+            or obj:IsA("VectorForce")
+            or obj:IsA("LinearVelocity")
+            or obj:IsA("BodyForce")
+            or obj:IsA("BodyGyro") then
+                task.defer(function()
+                    pcall(function() obj:Destroy() end)
+                end)
+            end
+        end)
+        table.insert(protectConns, conn)
+
+        -- каждый кадр зануляем AssemblyLinearVelocity
+        local kbLoop = RunService.Heartbeat:Connect(function()
+            if not PROTECT.AntiKnockback then return end
+            local r = getHRP()
+            if r then
+                r.AssemblyLinearVelocity = Vector3.new(0, r.AssemblyLinearVelocity.Y, 0)
+            end
+        end)
+        table.insert(protectConns, kbLoop)
+    end
+
+    -- ANTI RAGDOLL
+    -- восстанавливаем Motor6D если их убивают + ставим PlatformStand = false
+    if PROTECT.AntiRagdoll and hum then
+        local ragConn = RunService.Heartbeat:Connect(function()
+            if not PROTECT.AntiRagdoll then return end
+            local h = getHum()
+            if h then
+                if h:GetState() == Enum.HumanoidStateType.Ragdoll
+                or h:GetState() == Enum.HumanoidStateType.FallingDown then
+                    h:ChangeState(Enum.HumanoidStateType.GettingUp)
+                end
+                h.PlatformStand = false
+            end
+            -- убиваем BallSocketConstraint / HingeConstraint добавленные как рагдолл
+            local c2 = getChar()
+            if c2 then
+                for _, v in ipairs(c2:GetDescendants()) do
+                    if v:IsA("BallSocketConstraint") or v:IsA("HingeConstraint") then
+                        local n = v.Name:lower()
+                        if n:find("ragdoll") or n:find("collapse") then
+                            pcall(function() v:Destroy() end)
+                        end
+                    end
+                end
+            end
+        end)
+        table.insert(protectConns, ragConn)
+    end
+
+    -- ANTI FALL (anti fly-off / anti fling)
+    -- сохраняет позицию на земле, при фулл-фале возвращает
+    if PROTECT.AntiFall then
+        local lastSafePos = nil
+        local lastSafeTime = 0
+
+        local fallLoop = RunService.Heartbeat:Connect(function()
+            if not PROTECT.AntiFall then return end
+            local r = getHRP()
+            local h = getHum()
+            if not r or not h then return end
+
+            local speed = r.AssemblyLinearVelocity
+            local t = tick()
+
+            -- сохраняем "безопасную" позицию когда на земле
+            if h:GetState() == Enum.HumanoidStateType.Running
+            or h:GetState() == Enum.HumanoidStateType.Idle then
+                if t - lastSafeTime > 0.5 then
+                    lastSafePos = r.Position
+                    lastSafeTime = t
+                end
+            end
+
+            -- если вертикальная скорость слишком большая (фусс / флинг) — ТП назад
+            local vertSpeed = math.abs(speed.Y)
+            local horizSpeed = Vector2.new(speed.X, speed.Z).Magnitude
+            if (vertSpeed > 120 or horizSpeed > 200) and lastSafePos then
+                r.CFrame = CFrame.new(lastSafePos + Vector3.new(0, 3, 0))
+                r.AssemblyLinearVelocity = Vector3.zero
+                r.AssemblyAngularVelocity = Vector3.zero
+            end
+        end)
+        table.insert(protectConns, fallLoop)
+    end
+
+    -- ANTI GRAB
+    -- убиваем Weld / WeldConstraint с подозрительными именами
+    if PROTECT.AntiGrab then
+        local grabConn = ch.DescendantAdded:Connect(function(obj)
+            if obj:IsA("Weld") or obj:IsA("WeldConstraint") or obj:IsA("Motor6D") then
+                local n = obj.Name:lower()
+                if n:find("grab") or n:find("attach") or n:find("rope")
+                or n:find("chain") or n:find("hold") or n:find("carry") then
+                    task.defer(function()
+                        pcall(function() obj:Destroy() end)
+                    end)
+                end
+            end
+        end)
+        table.insert(protectConns, grabConn)
+    end
+end
+
+-- переприменяем при респавне
+lp.CharacterAdded:Connect(function()
+    task.wait(1)
+    applyProtect()
+end)
+
+-- ============================================================
+-- CLIPBOARD
+-- ============================================================
+
+local function copyToClipboard(text)
+    local ok = pcall(function() setclipboard(text) end)
+    if not ok then pcall(function() Clipboard.set(text) end) end
+    return ok
+end
+
+local function getRootPart()
+    local char = lp.Character
+    if not char then return nil end
+    return char:FindFirstChild("HumanoidRootPart")
+end
+
+-- ============================================================
+-- SCREEN GUI
+-- ============================================================
+
+local sg = Instance.new("ScreenGui")
+sg.Name           = "CoordCopierV2"
+sg.ResetOnSpawn   = false
+sg.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+sg.IgnoreGuiInset = true
+sg.Parent         = lp.PlayerGui
+
+-- ОКНО — высота 520 чтобы всё влезало
+local WIN_W, WIN_H = 420, 520
+
+local win = mkframe{
+    Name="Window",
+    Size=UDim2.new(0,WIN_W,0,WIN_H),
+    Position=UDim2.new(0.5,-WIN_W/2,0.5,-WIN_H/2),
+    BackgroundColor3=C.void,
+    ClipsDescendants=true,
+    Parent=sg
+}
+corner(16,win)
+stroke(C.acc1,1.5,0.25,win)
+
+gradSeq(ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(8,4,24)),
+    ColorSequenceKeypoint.new(0.5,Color3.fromRGB(13,7,34)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(6,3,18)),
+}),145,win)
+
+-- orbs
+local function orb(col,sz,pos)
+    local o=mkframe{
+        Size=UDim2.new(0,sz,0,sz),Position=pos,
+        BackgroundColor3=col,BackgroundTransparency=0.84,
+        ZIndex=0,Parent=win
+    }
+    corner(sz,o)
+end
+orb(C.acc1, 180, UDim2.new(0,-60,0,-60))
+orb(C.pink,  140, UDim2.new(1,-80,0,-40))
+orb(C.cyan,  130, UDim2.new(0,-40,1,-80))
+
+for i=1,60 do
+    mkframe{
+        Size=UDim2.new(1,0,0,1),
+        Position=UDim2.new(0,0,0,i*9),
+        BackgroundColor3=C.white,
+        BackgroundTransparency=0.965,
+        ZIndex=1, Parent=win
+    }
+end
+
+-- ============================================================
+-- TOP BAR
+-- ============================================================
+
+local topBar=mkframe{
+    Size=UDim2.new(1,0,0,58),
+    BackgroundColor3=C.deep,
+    ZIndex=4, Parent=win
+}
+corner(16,topBar)
+mkframe{
+    Size=UDim2.new(1,0,0,16),
+    Position=UDim2.new(0,0,1,-16),
+    BackgroundColor3=C.deep,
+    ZIndex=4, Parent=topBar
+}
+grad2(Color3.fromRGB(26,8,70),Color3.fromRGB(10,5,38),90,topBar)
+
+local shimmer=mkframe{
+    Size=UDim2.new(1,0,0,2),
+    Position=UDim2.new(0,0,1,-2),
+    BackgroundColor3=C.acc2,
+    BackgroundTransparency=0.3,
+    ZIndex=5, Parent=topBar
+}
+gradSeq(ColorSequence.new({
+    ColorSequenceKeypoint.new(0,C.acc1),
+    ColorSequenceKeypoint.new(0.5,C.pink),
+    ColorSequenceKeypoint.new(1,C.acc1),
+}),0,shimmer)
+
+task.spawn(function()
+    local t=0
+    while win.Parent do
+        t+=0.025
+        shimmer.BackgroundTransparency=0.1+math.abs(math.sin(t))*0.45
+        task.wait(0.03)
+    end
+end)
+
+local iconBadge=mkframe{
+    Size=UDim2.new(0,34,0,34),
+    Position=UDim2.new(0,12,0.5,-17),
+    BackgroundColor3=C.acc1,
+    ZIndex=5, Parent=topBar
+}
+corner(9,iconBadge)
+gradSeq(ColorSequence.new({
+    ColorSequenceKeypoint.new(0,C.acc1),
+    ColorSequenceKeypoint.new(1,C.cyan),
+}),135,iconBadge)
+mklabel{
+    Text="⌖", Size=UDim2.new(1,0,1,0),
+    TextColor3=C.white, Font=Enum.Font.GothamBold,
+    TextSize=18, ZIndex=6, Parent=iconBadge
+}
+
+mklabel{
+    Text="COORDINATE COPIER  v2",
+    Size=UDim2.new(0,240,0,20),
+    Position=UDim2.new(0,54,0,10),
+    TextColor3=C.white, Font=Enum.Font.GothamBold,
+    TextSize=13, TextXAlignment=Enum.TextXAlignment.Left,
+    ZIndex=5, Parent=topBar
+}
+
+local badgeRow=mkframe{
+    Size=UDim2.new(0,240,0,16),
+    Position=UDim2.new(0,55,0,32),
+    BackgroundTransparency=1,
+    ZIndex=5, Parent=topBar
+}
+local badgeLayout=Instance.new("UIListLayout")
+badgeLayout.FillDirection=Enum.FillDirection.Horizontal
+badgeLayout.SortOrder=Enum.SortOrder.LayoutOrder
+badgeLayout.Padding=UDim.new(0,5)
+badgeLayout.VerticalAlignment=Enum.VerticalAlignment.Center
+badgeLayout.Parent=badgeRow
+
+local function badge(txt,col,order)
+    local b=mkframe{
+        Size=UDim2.new(0,0,1,0),
+        AutomaticSize=Enum.AutomaticSize.X,
+        BackgroundColor3=col,
+        BackgroundTransparency=0.78,
+        LayoutOrder=order, ZIndex=5, Parent=badgeRow
+    }
+    corner(4,b)
+    stroke(col,1,0.4,b)
+    local pad=Instance.new("UIPadding")
+    pad.PaddingLeft=UDim.new(0,5) pad.PaddingRight=UDim.new(0,5)
+    pad.PaddingTop=UDim.new(0,1) pad.PaddingBottom=UDim.new(0,1)
+    pad.Parent=b
+    mklabel{
+        Text=txt, Size=UDim2.new(0,0,1,0),
+        AutomaticSize=Enum.AutomaticSize.X,
+        TextColor3=col, Font=Enum.Font.GothamBold,
+        TextSize=8, ZIndex=6, Parent=b
+    }
+end
+badge("LIVE",C.cyan,1)
+badge("v2.0",C.acc2,2)
+badge("ONYX",C.pink,3)
+
+-- top controls
+local minimized=false
+local function topCtrl(txt,col,xOff,cb)
+    local b=mkbtn{
+        Size=UDim2.new(0,26,0,26),
+        Position=UDim2.new(1,xOff,0.5,-13),
+        BackgroundColor3=col,
+        BackgroundTransparency=0.25,
+        Text=txt, TextColor3=C.white,
+        Font=Enum.Font.GothamBold, TextSize=10,
+        ZIndex=6, Parent=topBar
+    }
+    corner(7,b)
+    stroke(col,1,0.4,b)
+    b.MouseEnter:Connect(function()
+        TweenService:Create(b,TweenInfo.new(0.15),{BackgroundTransparency=0}):Play()
+    end)
+    b.MouseLeave:Connect(function()
+        TweenService:Create(b,TweenInfo.new(0.15),{BackgroundTransparency=0.25}):Play()
+    end)
+    b.MouseButton1Click:Connect(cb)
+end
+
+topCtrl("−",C.txtMute,-66,function()
+    minimized=not minimized
+    TweenService:Create(win,TweenInfo.new(0.3,Enum.EasingStyle.Quart),{
+        Size=minimized
+            and UDim2.new(0,WIN_W,0,58)
+            or  UDim2.new(0,WIN_W,0,WIN_H)
+    }):Play()
+end)
+topCtrl("X",C.red,-34,function()
+    TweenService:Create(win,TweenInfo.new(0.25,Enum.EasingStyle.Quart),{
+        Size=UDim2.new(0,0,0,0),
+        Position=UDim2.new(0.5,0,0.5,0)
+    }):Play()
+    task.delay(0.3,function() sg:Destroy() end)
+end)
+
+-- ============================================================
+-- TAB BAR
+-- ============================================================
+
+local TAB_H = 36
+local tabBarFrame = mkframe{
+    Size=UDim2.new(1,0,0,TAB_H),
+    Position=UDim2.new(0,0,0,58),
+    BackgroundColor3=C.deep,
+    ZIndex=4, Parent=win
+}
+mkframe{
+    Size=UDim2.new(1,0,0,1),
+    Position=UDim2.new(0,0,1,-1),
+    BackgroundColor3=C.acc1,
+    BackgroundTransparency=0.7,
+    ZIndex=5, Parent=tabBarFrame
+}
+
+local tabsData = {
+    {name="COORDS", icon="⌖"},
+    {name="PROTECT", icon="⛨"},
+}
+
+local currentTab = "COORDS"
+local tabBtns = {}
+local tabPages = {}
+
+-- создаём страницы
+for _,t in ipairs(tabsData) do
+    local page = mkframe{
+        Size=UDim2.new(1,0,1,-(58+TAB_H+22)),
+        Position=UDim2.new(0,0,0,58+TAB_H),
+        BackgroundTransparency=1,
+        Visible=false,
+        ZIndex=3, Parent=win
+    }
+    tabPages[t.name] = page
+end
+
+local function switchTab(name)
+    currentTab = name
+    for _,t in ipairs(tabsData) do
+        tabPages[t.name].Visible = (t.name == name)
+        local btn = tabBtns[t.name]
+        if btn then
+            local active = (t.name == name)
+            TweenService:Create(btn,TweenInfo.new(0.15),{
+                BackgroundTransparency = active and 0 or 1,
+                BackgroundColor3 = active and C.acc1 or C.void,
+                TextColor3 = active and C.white or C.txtMute,
+            }):Play()
+        end
+    end
+end
+
+-- кнопки табов
+local tabLayout = Instance.new("UIListLayout")
+tabLayout.FillDirection = Enum.FillDirection.Horizontal
+tabLayout.SortOrder = Enum.SortOrder.LayoutOrder
+tabLayout.Parent = tabBarFrame
+
+for i,t in ipairs(tabsData) do
+    local btn = mkbtn{
+        Size=UDim2.new(0,WIN_W/#tabsData,0,TAB_H),
+        BackgroundColor3=C.void,
+        BackgroundTransparency=1,
+        Text=t.icon.."  "..t.name,
+        TextColor3=C.txtMute,
+        Font=Enum.Font.GothamBold,
+        TextSize=11,
+        LayoutOrder=i,
+        ZIndex=5, Parent=tabBarFrame
+    }
+    corner(0,btn)
+    tabBtns[t.name] = btn
+    btn.MouseButton1Click:Connect(function() switchTab(t.name) end)
+    btn.MouseEnter:Connect(function()
+        if currentTab ~= t.name then
+            btn.TextColor3 = C.acc2
+        end
+    end)
+    btn.MouseLeave:Connect(function()
+        if currentTab ~= t.name then
+            btn.TextColor3 = C.txtMute
+        end
+    end)
+end
+
+-- ============================================================
+-- PAGE 1: COORDS
+-- ============================================================
+
+local pg1 = tabPages["COORDS"]
+
+-- LIVE COORD CARD
+local coordCard=mkframe{
+    Size=UDim2.new(1,-20,0,110),
+    Position=UDim2.new(0,10,0,10),
+    BackgroundColor3=C.card,
+    ZIndex=4, Parent=pg1
+}
+corner(12,coordCard)
+stroke(C.acc1,1,0.6,coordCard)
+gradSeq(ColorSequence.new({
+    ColorSequenceKeypoint.new(0,Color3.fromRGB(28,16,62)),
+    ColorSequenceKeypoint.new(1,Color3.fromRGB(14,9,38)),
+}),120,coordCard)
+
+local topStrip=mkframe{
+    Size=UDim2.new(1,0,0,3),
+    BackgroundColor3=C.acc1,
+    ZIndex=5, Parent=coordCard
+}
+corner(12,topStrip)
+mkframe{
+    Size=UDim2.new(1,0,0.5,0),
+    Position=UDim2.new(0,0,0.5,0),
+    BackgroundColor3=C.acc1,
+    ZIndex=5, Parent=topStrip
+}
+gradSeq(ColorSequence.new({
+    ColorSequenceKeypoint.new(0,C.acc1),
+    ColorSequenceKeypoint.new(0.5,C.pink),
+    ColorSequenceKeypoint.new(1,C.cyan),
+}),0,topStrip)
+
+mklabel{
+    Text="LIVE POSITION",
+    Size=UDim2.new(1,-16,0,18),
+    Position=UDim2.new(0,12,0,8),
+    TextColor3=C.acc2,
+    Font=Enum.Font.GothamBold,
+    TextSize=9,
+    TextXAlignment=Enum.TextXAlignment.Left,
+    ZIndex=5, Parent=coordCard
+}
+
+local axisData={
+    {label="X",col=C.red,  yPos=28},
+    {label="Y",col=C.green,yPos=58},
+    {label="Z",col=C.cyan, yPos=88},
+}
+local axisValueLabels={}
+for _,axis in ipairs(axisData) do
+    local pill=mkframe{
+        Size=UDim2.new(0,22,0,18),
+        Position=UDim2.new(0,12,0,axis.yPos-2),
+        BackgroundColor3=axis.col,
+        BackgroundTransparency=0.6,
+        ZIndex=5, Parent=coordCard
+    }
+    corner(5,pill)
+    stroke(axis.col,1,0.3,pill)
+    mklabel{
+        Text=axis.label,
+        Size=UDim2.new(1,0,1,0),
+        TextColor3=axis.col,
+        Font=Enum.Font.GothamBold,
+        TextSize=10, ZIndex=6, Parent=pill
+    }
+    mkframe{
+        Size=UDim2.new(0,1,0,18),
+        Position=UDim2.new(0,40,0,axis.yPos-2),
+        BackgroundColor3=axis.col,
+        BackgroundTransparency=0.7,
+        ZIndex=5, Parent=coordCard
+    }
+    local vl=mklabel{
+        Text="0.000",
+        Size=UDim2.new(1,-60,0,18),
+        Position=UDim2.new(0,48,0,axis.yPos-2),
+        TextColor3=C.txtMain,
+        Font=Enum.Font.GothamBold,
+        TextSize=13,
+        TextXAlignment=Enum.TextXAlignment.Left,
+        ZIndex=5, Parent=coordCard
+    }
+    axisValueLabels[axis.label]=vl
+end
+
+RunService.Heartbeat:Connect(function()
+    local hrp=getRootPart()
+    if hrp then
+        local p=hrp.Position
+        axisValueLabels["X"].Text=string.format("%.3f",p.X)
+        axisValueLabels["Y"].Text=string.format("%.3f",p.Y)
+        axisValueLabels["Z"].Text=string.format("%.3f",p.Z)
+    else
+        axisValueLabels["X"].Text="—"
+        axisValueLabels["Y"].Text="—"
+        axisValueLabels["Z"].Text="—"
+    end
+end)
+
+-- FORMAT SELECTOR
+local fmtCard=mkframe{
+    Size=UDim2.new(1,-20,0,48),
+    Position=UDim2.new(0,10,0,128),
+    BackgroundColor3=C.panel,
+    ZIndex=4, Parent=pg1
+}
+corner(10,fmtCard)
+stroke(C.acc1,1,0.7,fmtCard)
+
+mklabel{
+    Text="FORMAT",
+    Size=UDim2.new(0,60,1,0),
+    Position=UDim2.new(0,12,0,0),
+    TextColor3=C.txtMute,
+    Font=Enum.Font.GothamBold,
+    TextSize=8,
+    TextXAlignment=Enum.TextXAlignment.Left,
+    ZIndex=5, Parent=fmtCard
+}
+
+local formats={
+    {name="Vector3",fn=function(p) return string.format("Vector3.new(%.3f, %.3f, %.3f)",p.X,p.Y,p.Z) end},
+    {name="X,Y,Z",  fn=function(p) return string.format("%.3f, %.3f, %.3f",p.X,p.Y,p.Z) end},
+    {name="Table",  fn=function(p) return string.format("{x=%.3f, y=%.3f, z=%.3f}",p.X,p.Y,p.Z) end},
+    {name="CFrame", fn=function(p) return string.format("CFrame.new(%.3f, %.3f, %.3f)",p.X,p.Y,p.Z) end},
+}
+local selectedFmt=1
+local fmtBtns={}
+
+local fmtBtnRow=mkframe{
+    Size=UDim2.new(1,-80,1,-12),
+    Position=UDim2.new(0,66,0,6),
+    BackgroundTransparency=1,
+    ZIndex=5, Parent=fmtCard
+}
+local fmtLayout=Instance.new("UIListLayout")
+fmtLayout.FillDirection=Enum.FillDirection.Horizontal
+fmtLayout.SortOrder=Enum.SortOrder.LayoutOrder
+fmtLayout.Padding=UDim.new(0,5)
+fmtLayout.VerticalAlignment=Enum.VerticalAlignment.Center
+fmtLayout.Parent=fmtBtnRow
+
+local function updateFmtBtns()
+    for i,b in ipairs(fmtBtns) do
+        TweenService:Create(b,TweenInfo.new(0.15),{
+            BackgroundColor3=i==selectedFmt and C.acc1 or C.card,
+            BackgroundTransparency=i==selectedFmt and 0 or 0.4,
+            TextColor3=i==selectedFmt and C.white or C.txtMute,
+        }):Play()
+    end
+end
+
+for i,fmt in ipairs(formats) do
+    local fb=mkbtn{
+        Size=UDim2.new(0,62,1,0),
+        BackgroundColor3=C.card,
+        BackgroundTransparency=0.4,
+        Text=fmt.name,
+        TextColor3=C.txtMute,
+        Font=Enum.Font.GothamBold,
+        TextSize=9,
+        LayoutOrder=i,
+        ZIndex=6, Parent=fmtBtnRow
+    }
+    corner(7,fb)
+    fb.MouseButton1Click:Connect(function() selectedFmt=i updateFmtBtns() end)
+    fmtBtns[i]=fb
+end
+updateFmtBtns()
+
+-- PREVIEW BOX
+local previewCard=mkframe{
+    Size=UDim2.new(1,-20,0,48),
+    Position=UDim2.new(0,10,0,184),
+    BackgroundColor3=Color3.fromRGB(8,5,22),
+    ZIndex=4, Parent=pg1
+}
+corner(10,previewCard)
+stroke(C.acc1,1,0.7,previewCard)
+
+mklabel{
+    Text="PREVIEW",
+    Size=UDim2.new(1,-16,0,14),
+    Position=UDim2.new(0,10,0,4),
+    TextColor3=C.txtMute,
+    Font=Enum.Font.GothamBold,
+    TextSize=8,
+    TextXAlignment=Enum.TextXAlignment.Left,
+    ZIndex=5, Parent=previewCard
+}
+local previewLabel=mklabel{
+    Text="Vector3.new(0.000, 0.000, 0.000)",
+    Size=UDim2.new(1,-16,0,22),
+    Position=UDim2.new(0,10,0,20),
+    TextColor3=C.cyan,
+    Font=Enum.Font.Code,
+    TextSize=11,
+    TextXAlignment=Enum.TextXAlignment.Left,
+    TextTruncate=Enum.TextTruncate.AtEnd,
+    ZIndex=5, Parent=previewCard
+}
+RunService.Heartbeat:Connect(function()
+    local hrp=getRootPart()
+    if hrp then
+        previewLabel.Text=formats[selectedFmt].fn(hrp.Position)
+    else
+        previewLabel.Text="waiting for character..."
+    end
+end)
+
+-- COPY BUTTONS — через UIListLayout чтобы не вылезали
+local btnScroll = Instance.new("ScrollingFrame")
+btnScroll.Size = UDim2.new(1,0,1,-240)
+btnScroll.Position = UDim2.new(0,0,0,240)
+btnScroll.BackgroundTransparency = 1
+btnScroll.BorderSizePixel = 0
+btnScroll.ScrollBarThickness = 3
+btnScroll.ScrollBarImageColor3 = C.acc1
+btnScroll.CanvasSize = UDim2.new(0,0,0,0)
+btnScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
+btnScroll.Parent = pg1
+
+local btnLayout = Instance.new("UIListLayout")
+btnLayout.SortOrder = Enum.SortOrder.LayoutOrder
+btnLayout.Padding = UDim.new(0,8)
+btnLayout.Parent = btnScroll
+
+local btnPad = Instance.new("UIPadding")
+btnPad.PaddingLeft = UDim.new(0,10)
+btnPad.PaddingRight = UDim.new(0,10)
+btnPad.PaddingTop = UDim.new(0,6)
+btnPad.PaddingBottom = UDim.new(0,10)
+btnPad.Parent = btnScroll
+
+local function pillBtn(icon,txt,g0,g1,col,order,cb)
+    local pill=mkbtn{
+        Size=UDim2.new(1,0,0,38),
+        BackgroundColor3=C.card,
+        Text="",
+        LayoutOrder=order,
+        ZIndex=5, Parent=btnScroll
+    }
+    corner(10,pill)
+    stroke(col,1.5,0.3,pill)
+    grad2(g0,g1,0,pill)
+
+    local ic=mkframe{
+        Size=UDim2.new(0,26,0,26),
+        Position=UDim2.new(0,8,0.5,-13),
+        BackgroundColor3=C.white,
+        BackgroundTransparency=0.82,
+        ZIndex=6, Parent=pill
+    }
+    corner(13,ic)
+    mklabel{
+        Text=icon,Size=UDim2.new(1,0,1,0),
+        TextColor3=C.white,Font=Enum.Font.GothamBold,
+        TextSize=13,ZIndex=7,Parent=ic
+    }
+    mklabel{
+        Text=txt,
+        Size=UDim2.new(1,-50,1,0),
+        Position=UDim2.new(0,42,0,0),
+        TextColor3=C.white,
+        Font=Enum.Font.GothamBold,
+        TextSize=12,
+        TextXAlignment=Enum.TextXAlignment.Left,
+        ZIndex=6,Parent=pill
+    }
+    local feedLabel=mklabel{
+        Text="",
+        Size=UDim2.new(0,80,1,0),
+        Position=UDim2.new(1,-88,0,0),
+        TextColor3=C.green,
+        Font=Enum.Font.GothamBold,
+        TextSize=10,
+        TextXAlignment=Enum.TextXAlignment.Right,
+        ZIndex=6,Parent=pill
+    }
+
+    pill.MouseEnter:Connect(function()
+        TweenService:Create(pill,TweenInfo.new(0.15),{BackgroundTransparency=0.15}):Play()
+    end)
+    pill.MouseLeave:Connect(function()
+        TweenService:Create(pill,TweenInfo.new(0.15),{BackgroundTransparency=0}):Play()
+    end)
+    pill.MouseButton1Click:Connect(function()
+        TweenService:Create(pill,TweenInfo.new(0.07),{Size=UDim2.new(1,-8,0,34)}):Play()
+        task.delay(0.07,function()
+            TweenService:Create(pill,TweenInfo.new(0.18,Enum.EasingStyle.Back),
+                {Size=UDim2.new(1,0,0,38)}):Play()
+        end)
+        local result=cb()
+        feedLabel.Text = result and "✓  Copied!" or "✗  Failed"
+        feedLabel.TextColor3 = result and C.green or C.red
+        task.delay(1.5,function()
+            TweenService:Create(feedLabel,TweenInfo.new(0.3),{TextTransparency=1}):Play()
+            task.delay(0.3,function()
+                feedLabel.Text="" feedLabel.TextTransparency=0
+            end)
+        end)
+    end)
+    return pill
+end
+
+pillBtn("⎘","COPY SELECTED FORMAT",
+    Color3.fromRGB(80,30,200), Color3.fromRGB(140,60,255), C.acc1, 1,
+    function()
+        local hrp=getRootPart()
+        if not hrp then return false end
+        return copyToClipboard(formats[selectedFmt].fn(hrp.Position))
+    end)
+
+pillBtn("⊞","COPY ALL FORMATS",
+    Color3.fromRGB(180,40,100), Color3.fromRGB(255,80,180), C.pink, 2,
+    function()
+        local hrp=getRootPart()
+        if not hrp then return false end
+        local p=hrp.Position
+        local lines={}
+        for _,fmt in ipairs(formats) do
+            table.insert(lines,fmt.name..": "..fmt.fn(p))
+        end
+        return copyToClipboard(table.concat(lines,"\n"))
+    end)
+
+pillBtn("★","SAVE TO HISTORY",
+    Color3.fromRGB(160,100,0), Color3.fromRGB(255,190,40), C.gold, 3,
+    function()
+        local hrp=getRootPart()
+        if not hrp then return false end
+        _G.CoordHistory=_G.CoordHistory or {}
+        table.insert(_G.CoordHistory,{
+            pos=hrp.Position,
+            time=os.date("%H:%M:%S"),
+            fmt=formats[selectedFmt].fn(hrp.Position)
+        })
+        copyToClipboard(formats[selectedFmt].fn(hrp.Position))
+        return true
+    end)
+
+pillBtn("↩","TELEPORT TO LAST SAVED",
+    Color3.fromRGB(0,100,150), Color3.fromRGB(40,180,255), C.cyan, 4,
+    function()
+        _G.CoordHistory=_G.CoordHistory or {}
+        if #_G.CoordHistory == 0 then return false end
+        local last=_G.CoordHistory[#_G.CoordHistory]
+        local hrp=getRootPart()
+        if not hrp then return false end
+        hrp.CFrame=CFrame.new(last.pos+Vector3.new(0,3,0))
+        return true
+    end)
+
+-- ============================================================
+-- PAGE 2: PROTECT
+-- ============================================================
+
+local pg2 = tabPages["PROTECT"]
+
+-- заголовок секции
+local function protSectionLbl(txt, yPos)
+    mkframe{
+        Size=UDim2.new(1,-20,0,1),
+        Position=UDim2.new(0,10,0,yPos),
+        BackgroundColor3=C.acc1,
+        BackgroundTransparency=0.7,
+        ZIndex=4, Parent=pg2
+    }
+    mklabel{
+        Text=txt,
+        Size=UDim2.new(1,-20,0,20),
+        Position=UDim2.new(0,14,0,yPos-16),
+        TextColor3=C.acc2,
+        Font=Enum.Font.GothamBold,
+        TextSize=9,
+        TextXAlignment=Enum.TextXAlignment.Left,
+        ZIndex=4, Parent=pg2
+    }
+end
+
+-- тоггл для PROTECT
+local function protToggle(txt, desc, col, key, yPos)
+    local card = mkframe{
+        Size=UDim2.new(1,-20,0,58),
+        Position=UDim2.new(0,10,0,yPos),
+        BackgroundColor3=C.card,
+        ZIndex=4, Parent=pg2
+    }
+    corner(10,card)
+    stroke(col,1,0.5,card)
+
+    -- иконка статуса
+    local dot=mkframe{
+        Size=UDim2.new(0,8,0,8),
+        Position=UDim2.new(0,12,0.5,-4),
+        BackgroundColor3=PROTECT[key] and C.green or C.red,
+        ZIndex=5, Parent=card
+    }
+    corner(4,dot)
+
+    mklabel{
+        Text=txt,
+        Size=UDim2.new(1,-70,0,20),
+        Position=UDim2.new(0,28,0,10),
+        TextColor3=C.txtMain,
+        Font=Enum.Font.GothamBold,
+        TextSize=12,
+        TextXAlignment=Enum.TextXAlignment.Left,
+        ZIndex=5, Parent=card
+    }
+    mklabel{
+        Text=desc,
+        Size=UDim2.new(1,-70,0,16),
+        Position=UDim2.new(0,28,0,30),
+        TextColor3=C.txtMute,
+        Font=Enum.Font.Gotham,
+        TextSize=9,
+        TextXAlignment=Enum.TextXAlignment.Left,
+        ZIndex=5, Parent=card
+    }
+
+    -- pill toggle
+    local track=mkframe{
+        Size=UDim2.new(0,42,0,22),
+        Position=UDim2.new(1,-54,0.5,-11),
+        BackgroundColor3=PROTECT[key] and col or C.panel,
+        ZIndex=5, Parent=card
+    }
+    corner(11,track)
+    local knob=mkframe{
+        Size=UDim2.new(0,16,0,16),
+        Position=PROTECT[key]
+            and UDim2.new(1,-19,0.5,-8)
+            or  UDim2.new(0,3,0.5,-8),
+        BackgroundColor3=C.white,
+        ZIndex=6, Parent=track
+    }
+    corner(8,knob)
+
+    local btn=mkbtn{
+        Size=UDim2.new(1,0,1,0),
+        BackgroundTransparency=1,
+        Text="",
+        ZIndex=7, Parent=card
+    }
+
+    btn.MouseButton1Click:Connect(function()
+        PROTECT[key]=not PROTECT[key]
+        local on=PROTECT[key]
+        TweenService:Create(dot,TweenInfo.new(0.15),{
+            BackgroundColor3=on and C.green or C.red
+        }):Play()
+        TweenService:Create(track,TweenInfo.new(0.18),{
+            BackgroundColor3=on and col or C.panel
+        }):Play()
+        TweenService:Create(knob,TweenInfo.new(0.18),{
+            Position=on
+                and UDim2.new(1,-19,0.5,-8)
+                or  UDim2.new(0,3,0.5,-8)
+        }):Play()
+        applyProtect()
+    end)
+
+    card.MouseEnter:Connect(function()
+        TweenService:Create(card,TweenInfo.new(0.12),{BackgroundColor3=C.cardHov}):Play()
+    end)
+    card.MouseLeave:Connect(function()
+        TweenService:Create(card,TweenInfo.new(0.12),{BackgroundColor3=C.card}):Play()
+    end)
+
+    return card
+end
+
+protSectionLbl("MOVEMENT PROTECTION", 16)
+protToggle(
+    "Anti Knockback",
+    "Убирает откидывание / BodyVelocity / LinearVelocity",
+    C.cyan, "AntiKnockback", 24
+)
+protToggle(
+    "Anti Ragdoll",
+    "Блокирует рагдолл стейт, возвращает GettingUp",
+    C.acc1, "AntiRagdoll", 90
+)
+protToggle(
+    "Anti Fall / Fling",
+    "Возвращает на последнюю безопасную позицию при флинге",
+    C.gold, "AntiFall", 156
+)
+protToggle(
+    "Anti Grab",
+    "Уничтожает weld grab/attach/hold/chain при появлении",
+    C.pink, "AntiGrab", 222
+)
+
+-- кнопка ALL ON / ALL OFF
+local allOnState = false
+local allBtn = mkbtn{
+    Size=UDim2.new(1,-20,0,38),
+    Position=UDim2.new(0,10,0,296),
+    BackgroundColor3=C.green,
+    BackgroundTransparency=0.15,
+    Text="⬡  ENABLE ALL",
+    TextColor3=C.void,
+    Font=Enum.Font.GothamBold,
+    TextSize=13,
+    ZIndex=4, Parent=pg2
+}
+corner(10,allBtn)
+stroke(C.green,1.5,0.3,allBtn)
+
+allBtn.MouseButton1Click:Connect(function()
+    allOnState = not allOnState
+    for k in pairs(PROTECT) do PROTECT[k]=allOnState end
+    allBtn.Text = allOnState and "⬡  DISABLE ALL" or "⬡  ENABLE ALL"
+    allBtn.TextColor3 = allOnState and C.white or C.void
+    TweenService:Create(allBtn,TweenInfo.new(0.2),{
+        BackgroundColor3=allOnState and C.red or C.green
+    }):Play()
+    -- обновляем все дот-индикаторы через переинит
+    applyProtect()
+    -- пересоздаём страницу визуально — перезапускаем таб
+    switchTab("PROTECT")
+end)
+
+-- подсказка
+mklabel{
+    Text="⚠ Anti Fall срабатывает при скорости > 120 / 200 по вертикали / горизонтали",
+    Size=UDim2.new(1,-20,0,28),
+    Position=UDim2.new(0,10,0,342),
+    TextColor3=C.txtMute,
+    Font=Enum.Font.Gotham,
+    TextSize=9,
+    TextWrapped=true,
+    ZIndex=4, Parent=pg2
+}
+
+-- ============================================================
+-- STATUS BAR
+-- ============================================================
+
+local statusBar=mkframe{
+    Size=UDim2.new(1,0,0,22),
+    Position=UDim2.new(0,0,1,-22),
+    BackgroundColor3=C.deep,
+    ZIndex=6, Parent=win
+}
+corner(16,statusBar)
+mkframe{
+    Size=UDim2.new(1,0,0,12),
+    BackgroundColor3=C.deep,
+    ZIndex=6, Parent=statusBar
+}
+grad2(Color3.fromRGB(16,7,44),Color3.fromRGB(8,4,22),0,statusBar)
+
+local statDot=mkframe{
+    Size=UDim2.new(0,7,0,7),
+    Position=UDim2.new(0,10,0.5,-3),
+    BackgroundColor3=C.green,
+    ZIndex=7, Parent=statusBar
+}
+corner(4,statDot)
+
+task.spawn(function()
+    while win.Parent do
+        TweenService:Create(statDot,TweenInfo.new(0.9),{BackgroundTransparency=0.65}):Play()
+        task.wait(0.9)
+        TweenService:Create(statDot,TweenInfo.new(0.9),{BackgroundTransparency=0}):Play()
+        task.wait(0.9)
+    end
+end)
+
+mklabel{
+    Text="ONYX v67  ·  coord copier v2",
+    Size=UDim2.new(0.6,0,1,0),
+    Position=UDim2.new(0,22,0,0),
+    TextColor3=C.txtMute,Font=Enum.Font.Gotham,
+    TextSize=8,TextXAlignment=Enum.TextXAlignment.Left,
+    ZIndex=7,Parent=statusBar
+}
+
+local clockLabel=mklabel{
+    Text="00:00:00",
+    Size=UDim2.new(0,72,1,0),
+    Position=UDim2.new(1,-78,0,0),
+    TextColor3=C.acc2,Font=Enum.Font.GothamBold,
+    TextSize=8,ZIndex=7,Parent=statusBar
+}
+
+RunService.Heartbeat:Connect(function()
+    clockLabel.Text=os.date("%H:%M:%S",os.time())
+end)
+
+-- ============================================================
+-- DRAG
+-- ============================================================
+
+local drag,dragStart,dPos
+topBar.InputBegan:Connect(function(i)
+    if i.UserInputType==Enum.UserInputType.MouseButton1 then
+        drag=true dragStart=i.Position dPos=win.Position
+        i.Changed:Connect(function()
+            if i.UserInputState==Enum.UserInputState.End then drag=false end
+        end)
+    end
+end)
+local dInput
+topBar.InputChanged:Connect(function(i)
+    if i.UserInputType==Enum.UserInputType.MouseMovement then dInput=i end
+end)
+UserInputService.InputChanged:Connect(function(i)
+    if i==dInput and drag then
+        local d=i.Position-dragStart
+        win.Position=UDim2.new(
+            dPos.X.Scale,dPos.X.Offset+d.X,
+            dPos.Y.Scale,dPos.Y.Offset+d.Y
+        )
+    end
+end)
+
+-- ============================================================
+-- HOTKEY — F6 быстрое копирование
+-- ============================================================
+
+UserInputService.InputBegan:Connect(function(i,gpe)
+    if gpe then return end
+    if i.KeyCode==Enum.KeyCode.F6 then
+        local hrp=getRootPart()
+        if hrp then
+            copyToClipboard(formats[selectedFmt].fn(hrp.Position))
+            print("[CoordCopier v2] Copied: "..formats[selectedFmt].fn(hrp.Position))
+        end
+    end
+end)
+
+-- ============================================================
+-- OPEN ANIMATION + INIT
+-- ============================================================
+
+win.Size=UDim2.new(0,0,0,0)
+win.Position=UDim2.new(0.5,0,0.5,0)
+TweenService:Create(win,TweenInfo.new(0.5,Enum.EasingStyle.Back,Enum.EasingDirection.Out),{
+    Size=UDim2.new(0,WIN_W,0,WIN_H),
+    Position=UDim2.new(0.5,-WIN_W/2,0.5,-WIN_H/2)
+}):Play()
+
+switchTab("COORDS")
+applyProtect()
+
+print("[CoordCopier v2] loaded — F6 quick copy. 6767.")
