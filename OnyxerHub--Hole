@@ -412,6 +412,7 @@ _onyx_antiAFKToggle.MouseButton1Click:Connect(_onyx_toggleAntiAFK)
 
 _onyx_openHotkey = Enum.KeyCode.RightShift
 _onyx_waitingForOpenKey = false
+_onyx_uiHidden = false
 _onyx_openUIRow = _onyx_makeRow(_onyx_settingsPage, 214, 46)
 _onyx_openUILabel = _onyx_makeLabel(_onyx_openUIRow, "Open UI", 335)
 
@@ -458,16 +459,16 @@ _onyx_openKeyStroke.Thickness = 1
 _onyx_openKeyStroke.Parent = _onyx_openKeyButton
 
 function _onyx_updateOpenButton()
-    if _onyx_main.Visible then
-        _onyx_openUIToggle.Text = "HIDE"
-        _onyx_openUIToggle.TextColor3 = _onyx_currentTheme.ButtonText
-        _onyx_openUIToggle.BackgroundColor3 = _onyx_currentTheme.ButtonBg
-        _onyx_openUIToggleStroke.Color = _onyx_currentTheme.Border
-    else
+    if _onyx_uiHidden then
         _onyx_openUIToggle.Text = "OPEN"
         _onyx_openUIToggle.TextColor3 = _onyx_currentTheme.ActiveText
         _onyx_openUIToggle.BackgroundColor3 = _onyx_currentTheme.AccentSoft
         _onyx_openUIToggleStroke.Color = _onyx_currentTheme.Accent
+    else
+        _onyx_openUIToggle.Text = "HIDE"
+        _onyx_openUIToggle.TextColor3 = _onyx_currentTheme.ButtonText
+        _onyx_openUIToggle.BackgroundColor3 = _onyx_currentTheme.ButtonBg
+        _onyx_openUIToggleStroke.Color = _onyx_currentTheme.Border
     end
 end
 
@@ -477,7 +478,13 @@ function _onyx_setMainVisible(visible)
     end
 
     if visible then
+        _onyx_uiHidden = false
         _onyx_main.Visible = true
+        _onyx_sidebar.Visible = true
+        _onyx_content.Visible = true
+        _onyx_minimized = false
+        _onyx_main.Size = UDim2.fromOffset(720, 390)
+        _onyx_minimize.Text = "−"
         if _onyx_themePicker then
             _onyx_themePicker.Visible = false
             if _onyx_uiColorsButton then
@@ -491,14 +498,20 @@ function _onyx_setMainVisible(visible)
                 _onyx_uiColorsButton.Text = "OPEN"
             end
         end
-        _onyx_main.Visible = false
+        _onyx_uiHidden = true
+        -- Keep the top/title bar visible while hiding only the main content.
+        _onyx_main.Visible = true
+        _onyx_sidebar.Visible = false
+        _onyx_content.Visible = false
+        _onyx_main.Size = UDim2.fromOffset(720, 32)
+        _onyx_minimize.Text = "+"
     end
 
     _onyx_updateOpenButton()
 end
 
 _onyx_openUIToggle.MouseButton1Click:Connect(function()
-    _onyx_setMainVisible(not _onyx_main.Visible)
+    _onyx_setMainVisible(_onyx_uiHidden)
 end)
 
 _onyx_openKeyButton.MouseButton1Click:Connect(function()
@@ -2681,7 +2694,7 @@ _onyx_inputConnection = _onyx_UserInputService.InputBegan:Connect(function(input
     end
 
     if input.KeyCode == _onyx_openHotkey and not gameProcessedEvent then
-        _onyx_setMainVisible(not _onyx_main.Visible)
+        _onyx_setMainVisible(_onyx_uiHidden)
         return
     end
 
@@ -2702,6 +2715,11 @@ end)
 _onyx_minimized = false
 
 _onyx_minimize.MouseButton1Click:Connect(function()
+    if _onyx_uiHidden then
+        _onyx_setMainVisible(true)
+        return
+    end
+
     _onyx_minimized = not _onyx_minimized
     _onyx_sidebar.Visible = not _onyx_minimized
     _onyx_content.Visible = not _onyx_minimized
@@ -3156,6 +3174,7 @@ function _onyx_setupStartAndLoading()
             _onyx_halloweenLoadingDecor = nil
         end
 
+        _onyx_uiHidden = false
         _onyx_main.Visible = true
         _onyx_showPage("Start")
 
