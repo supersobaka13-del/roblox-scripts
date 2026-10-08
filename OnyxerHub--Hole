@@ -1,0 +1,3419 @@
+-- OnyxerHUB--Hole by Kurkupa
+-- Start + Exploit + Misc + Settings + Themes
+
+_onyx_Players = game:GetService("Players")
+_onyx_UserInputService = game:GetService("UserInputService")
+_onyx_TweenService = game:GetService("TweenService")
+_onyx_RunService = game:GetService("RunService")
+_onyx_VirtualUser = game:GetService("VirtualUser")
+
+_onyx_player = _onyx_Players.LocalPlayer
+_onyx_PlayerGui = _onyx_player:WaitForChild("PlayerGui")
+
+_onyx_scriptLaunchTime = "--:--:--"
+pcall(function()
+    _onyx_scriptLaunchTime = os.date("%H:%M:%S")
+end)
+
+_onyx_themes = {
+    Red = {
+        MainBg = Color3.fromRGB(15, 7, 10), SidebarBg = Color3.fromRGB(21, 9, 13), ContentBg = Color3.fromRGB(14, 6, 9),
+        SurfaceBg = Color3.fromRGB(24, 10, 14), PanelRowBg = Color3.fromRGB(29, 12, 17), ScrollBg = Color3.fromRGB(20, 8, 12),
+        ButtonBg = Color3.fromRGB(35, 14, 19), ActiveBg = Color3.fromRGB(63, 24, 31), BarBg = Color3.fromRGB(39, 16, 22),
+        PrimaryText = Color3.fromRGB(245, 228, 232), SecondaryText = Color3.fromRGB(225, 194, 201), MutedText = Color3.fromRGB(170, 125, 136),
+        SidebarText = Color3.fromRGB(180, 132, 144), ActiveText = Color3.fromRGB(255, 240, 244), ToggleText = Color3.fromRGB(220, 175, 185),
+        ButtonText = Color3.fromRGB(240, 215, 220), Accent = Color3.fromRGB(220, 75, 85), AccentBright = Color3.fromRGB(255, 120, 125),
+        AccentSoft = Color3.fromRGB(60, 27, 32), Border = Color3.fromRGB(125, 65, 72), HeaderSep = Color3.fromRGB(66, 30, 38),
+    },
+    Halloween = {
+        MainBg = Color3.fromRGB(8, 5, 2), SidebarBg = Color3.fromRGB(14, 8, 2), ContentBg = Color3.fromRGB(6, 4, 2),
+        SurfaceBg = Color3.fromRGB(16, 9, 2), PanelRowBg = Color3.fromRGB(22, 11, 2), ScrollBg = Color3.fromRGB(10, 6, 2),
+        ButtonBg = Color3.fromRGB(28, 13, 3), ActiveBg = Color3.fromRGB(56, 25, 3), BarBg = Color3.fromRGB(32, 15, 3),
+        PrimaryText = Color3.fromRGB(255, 239, 215), SecondaryText = Color3.fromRGB(242, 194, 130), MutedText = Color3.fromRGB(180, 132, 78),
+        SidebarText = Color3.fromRGB(196, 145, 86), ActiveText = Color3.fromRGB(255, 246, 228), ToggleText = Color3.fromRGB(226, 171, 98),
+        ButtonText = Color3.fromRGB(248, 218, 172), Accent = Color3.fromRGB(255, 112, 0), AccentBright = Color3.fromRGB(255, 176, 45),
+        AccentSoft = Color3.fromRGB(65, 28, 3), Border = Color3.fromRGB(120, 60, 0), HeaderSep = Color3.fromRGB(70, 33, 0),
+    },
+    Purple = {
+        MainBg = Color3.fromRGB(10, 7, 18), SidebarBg = Color3.fromRGB(15, 9, 25), ContentBg = Color3.fromRGB(9, 6, 17),
+        SurfaceBg = Color3.fromRGB(18, 11, 31), PanelRowBg = Color3.fromRGB(24, 14, 39), ScrollBg = Color3.fromRGB(14, 8, 24),
+        ButtonBg = Color3.fromRGB(27, 15, 43), ActiveBg = Color3.fromRGB(58, 28, 82), BarBg = Color3.fromRGB(30, 18, 48),
+        PrimaryText = Color3.fromRGB(239, 232, 255), SecondaryText = Color3.fromRGB(215, 196, 241), MutedText = Color3.fromRGB(150, 125, 180),
+        SidebarText = Color3.fromRGB(165, 140, 195), ActiveText = Color3.fromRGB(250, 244, 255), ToggleText = Color3.fromRGB(206, 181, 232),
+        ButtonText = Color3.fromRGB(230, 215, 248), Accent = Color3.fromRGB(168, 92, 255), AccentBright = Color3.fromRGB(205, 145, 255),
+        AccentSoft = Color3.fromRGB(55, 29, 75), Border = Color3.fromRGB(95, 65, 125), HeaderSep = Color3.fromRGB(55, 34, 76),
+    },
+    Black = {
+        MainBg = Color3.fromRGB(2, 2, 3), SidebarBg = Color3.fromRGB(5, 5, 7), ContentBg = Color3.fromRGB(3, 3, 5),
+        SurfaceBg = Color3.fromRGB(8, 8, 10), PanelRowBg = Color3.fromRGB(11, 11, 14), ScrollBg = Color3.fromRGB(6, 6, 8),
+        ButtonBg = Color3.fromRGB(12, 12, 15), ActiveBg = Color3.fromRGB(30, 30, 34), BarBg = Color3.fromRGB(18, 18, 22),
+        PrimaryText = Color3.fromRGB(238, 238, 242), SecondaryText = Color3.fromRGB(202, 202, 210), MutedText = Color3.fromRGB(130, 130, 138),
+        SidebarText = Color3.fromRGB(145, 145, 154), ActiveText = Color3.fromRGB(248, 248, 250), ToggleText = Color3.fromRGB(182, 182, 190),
+        ButtonText = Color3.fromRGB(224, 224, 230), Accent = Color3.fromRGB(180, 180, 192), AccentBright = Color3.fromRGB(245, 245, 250),
+        AccentSoft = Color3.fromRGB(35, 35, 40), Border = Color3.fromRGB(78, 78, 88), HeaderSep = Color3.fromRGB(34, 34, 40),
+    },
+    White = {
+        MainBg = Color3.fromRGB(242, 244, 248), SidebarBg = Color3.fromRGB(234, 237, 242), ContentBg = Color3.fromRGB(248, 249, 252),
+        SurfaceBg = Color3.fromRGB(236, 238, 243), PanelRowBg = Color3.fromRGB(231, 234, 240), ScrollBg = Color3.fromRGB(241, 243, 247),
+        ButtonBg = Color3.fromRGB(225, 228, 234), ActiveBg = Color3.fromRGB(207, 218, 235), BarBg = Color3.fromRGB(215, 218, 225),
+        PrimaryText = Color3.fromRGB(30, 32, 38), SecondaryText = Color3.fromRGB(58, 61, 69), MutedText = Color3.fromRGB(105, 109, 120),
+        SidebarText = Color3.fromRGB(80, 84, 96), ActiveText = Color3.fromRGB(18, 20, 25), ToggleText = Color3.fromRGB(70, 74, 84),
+        ButtonText = Color3.fromRGB(42, 45, 54), Accent = Color3.fromRGB(82, 108, 150), AccentBright = Color3.fromRGB(52, 83, 132),
+        AccentSoft = Color3.fromRGB(210, 220, 235), Border = Color3.fromRGB(160, 166, 178), HeaderSep = Color3.fromRGB(204, 208, 216),
+    },
+}
+
+_onyx_currentThemeName = "Halloween"
+_onyx_currentTheme = _onyx_themes[_onyx_currentThemeName]
+
+_onyx_gui = Instance.new("ScreenGui")
+_onyx_gui.Name = "OnyxerHUB--Hole"
+_onyx_gui.ResetOnSpawn = false
+_onyx_gui.IgnoreGuiInset = true
+_onyx_gui.Parent = _onyx_PlayerGui
+
+-- =========================================
+-- MAIN WINDOW
+-- =========================================
+
+_onyx_main = Instance.new("Frame")
+_onyx_main.Name = "Main"
+_onyx_main.Size = UDim2.fromOffset(720, 390)
+_onyx_main.Position = UDim2.new(0.5, -360, 0.5, -195)
+_onyx_main.BackgroundColor3 = Color3.fromRGB(8, 9, 16)
+_onyx_main.BorderSizePixel = 0
+_onyx_main.Parent = _onyx_gui
+_onyx_main.Visible = false
+
+_onyx_corner = Instance.new("UICorner")
+_onyx_corner.CornerRadius = UDim.new(0, 7)
+_onyx_corner.Parent = _onyx_main
+
+_onyx_mainStroke = Instance.new("UIStroke")
+_onyx_mainStroke.Color = Color3.fromRGB(72, 76, 100)
+_onyx_mainStroke.Thickness = 1
+_onyx_mainStroke.Parent = _onyx_main
+
+-- =========================================
+-- TITLE
+-- =========================================
+
+_onyx_title = Instance.new("TextLabel")
+_onyx_title.Size = UDim2.new(1, -100, 0, 32)
+_onyx_title.Position = UDim2.fromOffset(12, 0)
+_onyx_title.BackgroundTransparency = 1
+_onyx_title.Text = "OnyxerHUB--Hole by Kurkupa"
+_onyx_title.TextColor3 = Color3.fromRGB(220, 220, 230)
+_onyx_title.TextSize = 14
+_onyx_title.Font = Enum.Font.GothamMedium
+_onyx_title.TextXAlignment = Enum.TextXAlignment.Left
+_onyx_title.Parent = _onyx_main
+
+_onyx_headerSeparator = Instance.new("Frame")
+_onyx_headerSeparator.Size = UDim2.new(1, -16, 0, 1)
+_onyx_headerSeparator.Position = UDim2.fromOffset(8, 31)
+_onyx_headerSeparator.BackgroundColor3 = Color3.fromRGB(33, 36, 50)
+_onyx_headerSeparator.BorderSizePixel = 0
+_onyx_headerSeparator.Parent = _onyx_main
+
+-- =========================================
+-- MINIMIZE / CLOSE
+-- =========================================
+
+_onyx_minimize = Instance.new("TextButton")
+_onyx_minimize.Size = UDim2.fromOffset(32, 32)
+_onyx_minimize.Position = UDim2.new(1, -68, 0, 0)
+_onyx_minimize.BackgroundTransparency = 1
+_onyx_minimize.Text = "−"
+_onyx_minimize.TextColor3 = Color3.fromRGB(160, 160, 175)
+_onyx_minimize.TextSize = 20
+_onyx_minimize.Font = Enum.Font.GothamMedium
+_onyx_minimize.AutoButtonColor = false
+_onyx_minimize.Parent = _onyx_main
+
+_onyx_close = Instance.new("TextButton")
+_onyx_close.Size = UDim2.fromOffset(32, 32)
+_onyx_close.Position = UDim2.new(1, -34, 0, 0)
+_onyx_close.BackgroundTransparency = 1
+_onyx_close.Text = "×"
+_onyx_close.TextColor3 = Color3.fromRGB(180, 180, 195)
+_onyx_close.TextSize = 20
+_onyx_close.Font = Enum.Font.GothamMedium
+_onyx_close.AutoButtonColor = false
+_onyx_close.Parent = _onyx_main
+
+-- =========================================
+-- SIDEBAR
+-- =========================================
+
+_onyx_sidebar = Instance.new("Frame")
+_onyx_sidebar.Size = UDim2.fromOffset(85, 350)
+_onyx_sidebar.Position = UDim2.fromOffset(0, 32)
+_onyx_sidebar.BackgroundColor3 = Color3.fromRGB(11, 12, 21)
+_onyx_sidebar.BorderSizePixel = 0
+_onyx_sidebar.Parent = _onyx_main
+
+_onyx_sidebarStroke = Instance.new("UIStroke")
+_onyx_sidebarStroke.Color = Color3.fromRGB(38, 41, 58)
+_onyx_sidebarStroke.Thickness = 1
+_onyx_sidebarStroke.Transparency = 0.08
+_onyx_sidebarStroke.Parent = _onyx_sidebar
+
+-- =========================================
+-- CONTENT
+-- =========================================
+
+_onyx_content = Instance.new("Frame")
+_onyx_content.Size = UDim2.new(1, -95, 1, -42)
+_onyx_content.Position = UDim2.fromOffset(90, 38)
+_onyx_content.BackgroundColor3 = Color3.fromRGB(7, 8, 14)
+_onyx_content.BorderSizePixel = 0
+_onyx_content.Parent = _onyx_main
+
+_onyx_contentCorner = Instance.new("UICorner")
+_onyx_contentCorner.CornerRadius = UDim.new(0, 5)
+_onyx_contentCorner.Parent = _onyx_content
+
+_onyx_contentStroke = Instance.new("UIStroke")
+_onyx_contentStroke.Color = Color3.fromRGB(38, 41, 58)
+_onyx_contentStroke.Thickness = 1
+_onyx_contentStroke.Transparency = 0.08
+_onyx_contentStroke.Parent = _onyx_content
+
+-- =========================================
+-- PAGES
+-- =========================================
+
+_onyx_pages = {}
+
+function _onyx_createPage(name)
+    local page = Instance.new("Frame")
+    page.Name = name
+    page.Size = UDim2.fromScale(1, 1)
+    page.BackgroundTransparency = 1
+    page.Visible = false
+    page.Parent = _onyx_content
+    _onyx_pages[name] = page
+    return page
+end
+
+_onyx_exploitPage = _onyx_createPage("Exploit")
+_onyx_miscPage = _onyx_createPage("Misc")
+_onyx_pages["Start"] = _onyx_createPage("Start")
+_onyx_settingsPage = _onyx_createPage("Settings")
+
+function _onyx_pageTitle(parent, text)
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.new(1, -20, 0, 30)
+    label.Position = UDim2.fromOffset(12, 10)
+    label.BackgroundTransparency = 1
+    label.Text = text
+    label.TextColor3 = Color3.fromRGB(190, 190, 205)
+    label.TextSize = 13
+    label.Font = Enum.Font.GothamMedium
+    label.TextXAlignment = Enum.TextXAlignment.Left
+    label.Parent = parent
+    return label
+end
+
+_onyx_pageTitle(_onyx_exploitPage, "Exploit")
+_onyx_pageTitle(_onyx_miscPage, "Misc")
+_onyx_pageTitle(_onyx_settingsPage, "Settings")
+
+function _onyx_addText(parent, text, y)
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.new(1, -24, 0, 25)
+    label.Position = UDim2.fromOffset(12, y)
+    label.BackgroundTransparency = 1
+    label.Text = text
+    label.TextColor3 = Color3.fromRGB(130, 130, 145)
+    label.TextSize = 12
+    label.Font = Enum.Font.Gotham
+    label.TextXAlignment = Enum.TextXAlignment.Left
+    label.Parent = parent
+end
+
+_onyx_addText(_onyx_exploitPage, "Exploit features", 45)
+_onyx_addText(_onyx_exploitPage, "Select an item below to fly to it", 184)
+
+-- =========================================
+-- HELPERS FOR ROWS
+-- =========================================
+
+function _onyx_makeRow(parent, y, height)
+    local row = Instance.new("Frame")
+    row.Size = UDim2.new(1, -24, 0, height or 46)
+    row.Position = UDim2.fromOffset(12, y)
+    row.BackgroundColor3 = Color3.fromRGB(11, 12, 21)
+    row.BorderSizePixel = 0
+    row.Parent = parent
+
+    local rowCorner = Instance.new("UICorner")
+    rowCorner.CornerRadius = UDim.new(0, 5)
+    rowCorner.Parent = row
+
+    local rowStroke = Instance.new("UIStroke")
+    rowStroke.Color = Color3.fromRGB(60, 64, 86)
+    rowStroke.Thickness = 1
+    rowStroke.Parent = row
+
+    return row, rowStroke
+end
+
+function _onyx_makeToggle(parent, text)
+    local button = Instance.new("TextButton")
+    button.Size = UDim2.fromOffset(78, 28)
+    button.Position = UDim2.new(1, -88, 0.5, -14)
+    button.BackgroundColor3 = Color3.fromRGB(18, 20, 30)
+    button.BorderSizePixel = 0
+    button.Text = text or "OFF"
+    button.TextColor3 = Color3.fromRGB(145, 145, 160)
+    button.TextSize = 11
+    button.Font = Enum.Font.GothamMedium
+    button.AutoButtonColor = false
+    button.Parent = parent
+
+    local buttonCorner = Instance.new("UICorner")
+    buttonCorner.CornerRadius = UDim.new(0, 4)
+    buttonCorner.Parent = button
+
+    local buttonStroke = Instance.new("UIStroke")
+    buttonStroke.Color = Color3.fromRGB(70, 74, 98)
+    buttonStroke.Thickness = 1
+    buttonStroke.Parent = button
+
+    return button, buttonStroke
+end
+
+function _onyx_makeLabel(parent, text, width)
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.new(1, -(width or 110), 0, 46)
+    label.Position = UDim2.fromOffset(10, 0)
+    label.BackgroundTransparency = 1
+    label.Text = text
+    label.TextColor3 = Color3.fromRGB(220, 220, 230)
+    label.TextSize = 12
+    label.Font = Enum.Font.GothamMedium
+    label.TextXAlignment = Enum.TextXAlignment.Left
+    label.Parent = parent
+    return label
+end
+
+_onyx_themePicker = nil
+_onyx_themePickerButtons = {}
+
+-- =========================================
+-- SETTINGS / THEME
+-- =========================================
+
+_onyx_addText(_onyx_settingsPage, "Appearance", 45)
+
+settingsHint = Instance.new("TextLabel")
+settingsHint.Size = UDim2.new(1, -24, 0, 24)
+settingsHint.Position = UDim2.fromOffset(12, 70)
+settingsHint.BackgroundTransparency = 1
+settingsHint.Text = "Open UI Colors to choose a full interface theme"
+settingsHint.TextColor3 = Color3.fromRGB(125, 130, 148)
+settingsHint.TextSize = 10
+settingsHint.Font = Enum.Font.Gotham
+settingsHint.TextXAlignment = Enum.TextXAlignment.Left
+settingsHint.Parent = _onyx_settingsPage
+
+_onyx_uiColorsRow = _onyx_makeRow(_onyx_settingsPage, 102, 46)
+_onyx_uiColorsLabel = _onyx_makeLabel(_onyx_uiColorsRow, "UI Colors", 150)
+
+_onyx_uiColorsButton = Instance.new("TextButton")
+_onyx_uiColorsButton.Size = UDim2.fromOffset(110, 28)
+_onyx_uiColorsButton.Position = UDim2.new(1, -120, 0.5, -14)
+_onyx_uiColorsButton.BackgroundColor3 = Color3.fromRGB(18, 20, 30)
+_onyx_uiColorsButton.BorderSizePixel = 0
+_onyx_uiColorsButton.Text = "OPEN"
+_onyx_uiColorsButton.TextColor3 = Color3.fromRGB(215, 220, 230)
+_onyx_uiColorsButton.TextSize = 10
+_onyx_uiColorsButton.Font = Enum.Font.GothamMedium
+_onyx_uiColorsButton.AutoButtonColor = false
+_onyx_uiColorsButton.Parent = _onyx_uiColorsRow
+
+_onyx_uiColorsCorner = Instance.new("UICorner")
+_onyx_uiColorsCorner.CornerRadius = UDim.new(0, 4)
+_onyx_uiColorsCorner.Parent = _onyx_uiColorsButton
+
+_onyx_uiColorsStroke = Instance.new("UIStroke")
+_onyx_uiColorsStroke.Color = Color3.fromRGB(70, 74, 98)
+_onyx_uiColorsStroke.Thickness = 1
+_onyx_uiColorsStroke.Parent = _onyx_uiColorsButton
+
+-- =========================================
+-- SETTINGS: ANTI AFK
+-- =========================================
+
+_onyx_antiAFKEnabled = false
+_onyx_antiAFKConnection = nil
+
+function _onyx_updateAntiAFKButton()
+    if _onyx_antiAFKToggle then
+        if _onyx_antiAFKEnabled then
+            _onyx_antiAFKToggle.Text = "ON"
+            _onyx_antiAFKToggle.TextColor3 = Color3.fromRGB(225, 240, 255)
+            _onyx_antiAFKToggle.BackgroundColor3 = Color3.fromRGB(24, 35, 48)
+            _onyx_antiAFKToggleStroke.Color = _onyx_currentTheme.Accent
+        else
+            _onyx_antiAFKToggle.Text = "OFF"
+            _onyx_antiAFKToggle.TextColor3 = _onyx_currentTheme.ToggleText
+            _onyx_antiAFKToggle.BackgroundColor3 = _onyx_currentTheme.ButtonBg
+            _onyx_antiAFKToggleStroke.Color = _onyx_currentTheme.Border
+        end
+    end
+end
+
+function _onyx_stopAntiAFK()
+    _onyx_antiAFKEnabled = false
+    if _onyx_antiAFKConnection then
+        _onyx_antiAFKConnection:Disconnect()
+        _onyx_antiAFKConnection = nil
+    end
+    _onyx_updateAntiAFKButton()
+end
+
+function _onyx_startAntiAFK()
+    if _onyx_antiAFKEnabled then
+        return
+    end
+
+    _onyx_antiAFKEnabled = true
+    _onyx_antiAFKConnection = _onyx_player.Idled:Connect(function()
+        if not _onyx_antiAFKEnabled then
+            return
+        end
+        pcall(function()
+            _onyx_VirtualUser:CaptureController()
+            _onyx_VirtualUser:ClickButton2(Vector2.new(0, 0))
+        end)
+    end)
+    _onyx_updateAntiAFKButton()
+end
+
+function _onyx_toggleAntiAFK()
+    if _onyx_antiAFKEnabled then
+        _onyx_stopAntiAFK()
+    else
+        _onyx_startAntiAFK()
+    end
+end
+
+_onyx_antiAFKRow = _onyx_makeRow(_onyx_settingsPage, 158, 46)
+_onyx_antiAFKLabel = _onyx_makeLabel(_onyx_antiAFKRow, "Anti AFK", 150)
+_onyx_antiAFKToggle, _onyx_antiAFKToggleStroke = _onyx_makeToggle(_onyx_antiAFKRow)
+_onyx_antiAFKToggle.MouseButton1Click:Connect(_onyx_toggleAntiAFK)
+
+-- =========================================
+-- SETTINGS: OPEN / SHOW UI
+-- =========================================
+
+_onyx_openHotkey = Enum.KeyCode.RightShift
+_onyx_waitingForOpenKey = false
+_onyx_openUIRow = _onyx_makeRow(_onyx_settingsPage, 214, 46)
+_onyx_openUILabel = _onyx_makeLabel(_onyx_openUIRow, "Open UI", 335)
+
+_onyx_openUIToggle = Instance.new("TextButton")
+_onyx_openUIToggle.Size = UDim2.fromOffset(78, 28)
+_onyx_openUIToggle.Position = UDim2.new(1, -278, 0.5, -14)
+_onyx_openUIToggle.BackgroundColor3 = Color3.fromRGB(18, 20, 30)
+_onyx_openUIToggle.BorderSizePixel = 0
+_onyx_openUIToggle.Text = "HIDE"
+_onyx_openUIToggle.TextColor3 = Color3.fromRGB(220, 220, 230)
+_onyx_openUIToggle.TextSize = 10
+_onyx_openUIToggle.Font = Enum.Font.GothamMedium
+_onyx_openUIToggle.AutoButtonColor = false
+_onyx_openUIToggle.Parent = _onyx_openUIRow
+
+_onyx_openUIToggleCorner = Instance.new("UICorner")
+_onyx_openUIToggleCorner.CornerRadius = UDim.new(0, 4)
+_onyx_openUIToggleCorner.Parent = _onyx_openUIToggle
+
+_onyx_openUIToggleStroke = Instance.new("UIStroke")
+_onyx_openUIToggleStroke.Color = Color3.fromRGB(70, 74, 98)
+_onyx_openUIToggleStroke.Thickness = 1
+_onyx_openUIToggleStroke.Parent = _onyx_openUIToggle
+
+_onyx_openKeyButton = Instance.new("TextButton")
+_onyx_openKeyButton.Size = UDim2.fromOffset(90, 28)
+_onyx_openKeyButton.Position = UDim2.new(1, -188, 0.5, -14)
+_onyx_openKeyButton.BackgroundColor3 = Color3.fromRGB(18, 20, 30)
+_onyx_openKeyButton.BorderSizePixel = 0
+_onyx_openKeyButton.Text = _onyx_openHotkey.Name
+_onyx_openKeyButton.TextColor3 = Color3.fromRGB(220, 220, 230)
+_onyx_openKeyButton.TextSize = 10
+_onyx_openKeyButton.Font = Enum.Font.GothamMedium
+_onyx_openKeyButton.AutoButtonColor = false
+_onyx_openKeyButton.Parent = _onyx_openUIRow
+
+_onyx_openKeyCorner = Instance.new("UICorner")
+_onyx_openKeyCorner.CornerRadius = UDim.new(0, 4)
+_onyx_openKeyCorner.Parent = _onyx_openKeyButton
+
+_onyx_openKeyStroke = Instance.new("UIStroke")
+_onyx_openKeyStroke.Color = Color3.fromRGB(70, 74, 98)
+_onyx_openKeyStroke.Thickness = 1
+_onyx_openKeyStroke.Parent = _onyx_openKeyButton
+
+function _onyx_updateOpenButton()
+    if _onyx_main.Visible then
+        _onyx_openUIToggle.Text = "HIDE"
+        _onyx_openUIToggle.TextColor3 = _onyx_currentTheme.ButtonText
+        _onyx_openUIToggle.BackgroundColor3 = _onyx_currentTheme.ButtonBg
+        _onyx_openUIToggleStroke.Color = _onyx_currentTheme.Border
+    else
+        _onyx_openUIToggle.Text = "OPEN"
+        _onyx_openUIToggle.TextColor3 = _onyx_currentTheme.ActiveText
+        _onyx_openUIToggle.BackgroundColor3 = _onyx_currentTheme.AccentSoft
+        _onyx_openUIToggleStroke.Color = _onyx_currentTheme.Accent
+    end
+end
+
+function _onyx_setMainVisible(visible)
+    if _onyx_closing then
+        return
+    end
+
+    if visible then
+        _onyx_main.Visible = true
+        if _onyx_themePicker then
+            _onyx_themePicker.Visible = false
+            if _onyx_uiColorsButton then
+                _onyx_uiColorsButton.Text = "OPEN"
+            end
+        end
+    else
+        if _onyx_themePicker then
+            _onyx_themePicker.Visible = false
+            if _onyx_uiColorsButton then
+                _onyx_uiColorsButton.Text = "OPEN"
+            end
+        end
+        _onyx_main.Visible = false
+    end
+
+    _onyx_updateOpenButton()
+end
+
+_onyx_openUIToggle.MouseButton1Click:Connect(function()
+    _onyx_setMainVisible(not _onyx_main.Visible)
+end)
+
+_onyx_openKeyButton.MouseButton1Click:Connect(function()
+    _onyx_waitingForOpenKey = not _onyx_waitingForOpenKey
+    if _onyx_waitingForOpenKey then
+        _onyx_openKeyButton.Text = "PRESS KEY..."
+        _onyx_openKeyButton.TextColor3 = _onyx_currentTheme.ActiveText
+        _onyx_openKeyStroke.Color = _onyx_currentTheme.Accent
+    else
+        _onyx_openKeyButton.Text = _onyx_openHotkey.Name
+        _onyx_openKeyStroke.Color = _onyx_currentTheme.Border
+    end
+end)
+
+_onyx_currentThemeLabel = Instance.new("TextLabel")
+_onyx_currentThemeLabel.Size = UDim2.new(1, -24, 0, 24)
+_onyx_currentThemeLabel.Position = UDim2.fromOffset(12, 270)
+_onyx_currentThemeLabel.BackgroundTransparency = 1
+_onyx_currentThemeLabel.Text = "Current: Halloween"
+_onyx_currentThemeLabel.TextColor3 = Color3.fromRGB(155, 160, 178)
+_onyx_currentThemeLabel.TextSize = 10
+_onyx_currentThemeLabel.Font = Enum.Font.GothamMedium
+_onyx_currentThemeLabel.TextXAlignment = Enum.TextXAlignment.Left
+_onyx_currentThemeLabel.Parent = _onyx_settingsPage
+
+_onyx_halloweenMainDecor = nil
+_onyx_halloweenLoadingDecor = nil
+
+function _onyx_clearHalloweenDecor(root)
+    if root then
+        root:Destroy()
+    end
+    return nil
+end
+
+function _onyx_makeHalloweenDecorRoot(parent, name)
+    local root = Instance.new("Frame")
+    root.Name = name
+    root.Size = UDim2.fromScale(1, 1)
+    root.BackgroundTransparency = 1
+    root.BorderSizePixel = 0
+    root.ZIndex = 80
+    root.Parent = parent
+    root:SetAttribute("OnyxThemeIgnore", true)
+    return root
+end
+
+function _onyx_makePumpkin(parent, position, size)
+    local pumpkin = Instance.new("Frame")
+    pumpkin.Size = UDim2.fromOffset(size, math.floor(size * 0.82))
+    pumpkin.Position = position
+    pumpkin.BackgroundColor3 = Color3.fromRGB(244, 113, 28)
+    pumpkin.BorderSizePixel = 0
+    pumpkin.ZIndex = 81
+    pumpkin.Parent = parent
+    pumpkin:SetAttribute("OnyxThemeIgnore", true)
+
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, math.floor(size * 0.38))
+    corner.Parent = pumpkin
+
+    local stem = Instance.new("Frame")
+    stem.Size = UDim2.fromOffset(math.max(4, math.floor(size * 0.15)), math.max(5, math.floor(size * 0.20)))
+    stem.Position = UDim2.new(0.5, -math.floor(size * 0.075), 0, -math.floor(size * 0.10))
+    stem.BackgroundColor3 = Color3.fromRGB(99, 67, 32)
+    stem.BorderSizePixel = 0
+    stem.ZIndex = 82
+    stem.Parent = pumpkin
+    stem:SetAttribute("OnyxThemeIgnore", true)
+
+    local function eye(x)
+        local e = Instance.new("Frame")
+        e.Size = UDim2.fromOffset(math.max(3, math.floor(size * 0.12)), math.max(3, math.floor(size * 0.12)))
+        e.Position = UDim2.new(x, -math.floor(size * 0.06), 0, math.floor(size * 0.32))
+        e.BackgroundColor3 = Color3.fromRGB(28, 12, 10)
+        e.BorderSizePixel = 0
+        e.Rotation = x < 0.5 and -10 or 10
+        e.ZIndex = 82
+        e.Parent = pumpkin
+        e:SetAttribute("OnyxThemeIgnore", true)
+    end
+
+    eye(0.31)
+    eye(0.69)
+
+    local mouth = Instance.new("Frame")
+    mouth.Size = UDim2.fromOffset(math.max(6, math.floor(size * 0.38)), math.max(3, math.floor(size * 0.09)))
+    mouth.Position = UDim2.new(0.5, -math.floor(size * 0.19), 0, math.floor(size * 0.58))
+    mouth.BackgroundColor3 = Color3.fromRGB(28, 12, 10)
+    mouth.BorderSizePixel = 0
+    mouth.ZIndex = 82
+    mouth.Parent = pumpkin
+    mouth:SetAttribute("OnyxThemeIgnore", true)
+
+    local tooth = Instance.new("Frame")
+    tooth.Size = UDim2.fromOffset(math.max(2, math.floor(size * 0.07)), math.max(2, math.floor(size * 0.09)))
+    tooth.Position = UDim2.new(0.5, -1, 0, math.floor(size * 0.58))
+    tooth.BackgroundColor3 = Color3.fromRGB(255, 169, 55)
+    tooth.BorderSizePixel = 0
+    tooth.ZIndex = 83
+    tooth.Parent = pumpkin
+    tooth:SetAttribute("OnyxThemeIgnore", true)
+end
+
+function _onyx_makeWeb(parent, position, size)
+    local web = Instance.new("Frame")
+    web.Size = UDim2.fromOffset(size, size)
+    web.Position = position
+    web.BackgroundTransparency = 1
+    web.BorderSizePixel = 0
+    web.ZIndex = 80
+    web.Parent = parent
+    web:SetAttribute("OnyxThemeIgnore", true)
+
+    local lines = {
+        {Vector2.new(0.5,0), Vector2.new(0.5,1)},
+        {Vector2.new(0,0.5), Vector2.new(1,0.5)},
+        {Vector2.new(0.15,0.15), Vector2.new(0.85,0.85)},
+        {Vector2.new(0.85,0.15), Vector2.new(0.15,0.85)},
+    }
+    for _, pair in ipairs(lines) do
+        local a,b=pair[1],pair[2]
+        local line=Instance.new("Frame")
+        local dx=(b.X-a.X)*size
+        local dy=(b.Y-a.Y)*size
+        local len=math.sqrt(dx*dx+dy*dy)
+        line.Size=UDim2.fromOffset(math.floor(len),2)
+        line.Position=UDim2.fromOffset(math.floor(a.X*size), math.floor(a.Y*size))
+        line.AnchorPoint=Vector2.new(0,0.5)
+        line.Rotation=math.deg(math.atan2(dy,dx))
+        line.BackgroundColor3=Color3.fromRGB(180,120,205)
+        line.BackgroundTransparency=0.15
+        line.BorderSizePixel=0
+        line.ZIndex=81
+        line.Parent=web
+        line:SetAttribute("OnyxThemeIgnore", true)
+    end
+
+    for ring=1,3 do
+        local ringFrame=Instance.new("Frame")
+        ringFrame.Size=UDim2.fromScale(0.25+ring*0.18,0.25+ring*0.18)
+        ringFrame.Position=UDim2.fromScale(0.375-ring*0.09,0.375-ring*0.09)
+        ringFrame.BackgroundTransparency=1
+        ringFrame.BorderColor3=Color3.fromRGB(180,120,205)
+        ringFrame.BorderSizePixel=1
+        ringFrame.ZIndex=81
+        ringFrame.Parent=web
+        ringFrame:SetAttribute("OnyxThemeIgnore", true)
+    end
+end
+
+function _onyx_updateHalloweenDecorations(themeName)
+    _onyx_halloweenMainDecor = _onyx_clearHalloweenDecor(_onyx_halloweenMainDecor)
+    _onyx_halloweenLoadingDecor = _onyx_clearHalloweenDecor(_onyx_halloweenLoadingDecor)
+    if themeName ~= "Halloween" then
+        return
+    end
+
+    _onyx_halloweenMainDecor = _onyx_makeHalloweenDecorRoot(_onyx_main, "HalloweenDecor")
+    _onyx_makePumpkin(_onyx_halloweenMainDecor, UDim2.fromOffset(590, 4), 30)
+    _onyx_makePumpkin(_onyx_halloweenMainDecor, UDim2.fromOffset(625, 7), 24)
+    _onyx_makePumpkin(_onyx_halloweenMainDecor, UDim2.new(1, -42, 1, -40), 26)
+
+    if _onyx_loadingFrame and _onyx_loadingFrame.Parent then
+        _onyx_halloweenLoadingDecor = _onyx_makeHalloweenDecorRoot(_onyx_loadingFrame, "HalloweenLoadingDecor")
+        _onyx_makePumpkin(_onyx_halloweenLoadingDecor, UDim2.fromOffset(185, 6), 44)
+        _onyx_makePumpkin(_onyx_halloweenLoadingDecor, UDim2.fromOffset(245, 12), 32)
+    end
+end
+
+function _onyx_applyTheme(themeName)
+    local theme = _onyx_themes[themeName]
+    if not theme then return end
+
+    _onyx_currentThemeName = themeName
+    _onyx_currentTheme = theme
+
+    _onyx_main.BackgroundColor3 = theme.MainBg
+    _onyx_sidebar.BackgroundColor3 = theme.SidebarBg
+    _onyx_content.BackgroundColor3 = theme.ContentBg
+    _onyx_mainStroke.Color = theme.Border
+    _onyx_sidebarStroke.Color = theme.Border
+    _onyx_contentStroke.Color = theme.Border
+    _onyx_headerSeparator.BackgroundColor3 = theme.HeaderSep
+
+    for _, object in ipairs(_onyx_gui:GetDescendants()) do
+        if object:GetAttribute("OnyxThemeIgnore") then
+            continue
+        end
+
+        local role = object:GetAttribute("OnyxThemeRole")
+        if role and object:IsA("GuiObject") then
+            if role == "MainBg" then object.BackgroundColor3 = theme.MainBg
+            elseif role == "SidebarBg" then object.BackgroundColor3 = theme.SidebarBg
+            elseif role == "ContentBg" then object.BackgroundColor3 = theme.ContentBg
+            elseif role == "SurfaceBg" then object.BackgroundColor3 = theme.SurfaceBg
+            elseif role == "PanelRowBg" then object.BackgroundColor3 = theme.PanelRowBg
+            elseif role == "ScrollBg" then object.BackgroundColor3 = theme.ScrollBg
+            elseif role == "ButtonBg" then object.BackgroundColor3 = theme.ButtonBg
+            elseif role == "ActiveBg" then object.BackgroundColor3 = theme.ActiveBg
+            elseif role == "BarBg" then object.BackgroundColor3 = theme.BarBg
+            elseif role == "AccentBg" then object.BackgroundColor3 = theme.Accent
+            end
+        end
+
+        if object:IsA("TextLabel") or object:IsA("TextButton") then
+            local textRole = object:GetAttribute("OnyxTextRole")
+            if textRole == "PrimaryText" then object.TextColor3 = theme.PrimaryText
+            elseif textRole == "SecondaryText" then object.TextColor3 = theme.SecondaryText
+            elseif textRole == "MutedText" then object.TextColor3 = theme.MutedText
+            elseif textRole == "SidebarText" then object.TextColor3 = theme.SidebarText
+            elseif textRole == "ActiveText" then object.TextColor3 = theme.ActiveText
+            elseif textRole == "ToggleText" then object.TextColor3 = theme.ToggleText
+            elseif textRole == "ButtonText" then object.TextColor3 = theme.ButtonText
+            end
+        end
+
+        if object:IsA("UIStroke") then
+            local c = object.Color
+            local isOrange = c.R > 0.9 and c.G > 0.45 and c.G < 0.85 and c.B < 0.35
+            if not isOrange then object.Color = theme.Border end
+        end
+    end
+
+    -- Re-assert the three core surfaces after role-based recoloring.
+    _onyx_main.BackgroundColor3 = theme.MainBg
+    _onyx_sidebar.BackgroundColor3 = theme.SidebarBg
+    _onyx_content.BackgroundColor3 = theme.ContentBg
+
+    for btnName, data in pairs(buttons) do
+        if data and data.Button then
+            if btnName == _onyx_pages.__activePage then
+                data.Button.BackgroundColor3 = theme.AccentSoft
+                data.Button.TextColor3 = theme.ActiveText
+                data.Stroke.Color = theme.Accent
+            else
+                data.Button.BackgroundColor3 = theme.SidebarBg
+                data.Button.TextColor3 = theme.SidebarText
+                data.Stroke.Color = theme.Border
+            end
+        end
+    end
+
+    _onyx_uiColorsButton.BackgroundColor3 = theme.ButtonBg
+    _onyx_uiColorsButton.TextColor3 = theme.ButtonText
+    _onyx_uiColorsStroke.Color = theme.Border
+    _onyx_currentThemeLabel.Text = "Current: " .. _onyx_currentThemeName
+    _onyx_currentThemeLabel.TextColor3 = theme.MutedText
+    _onyx_updateAntiAFKButton()
+    _onyx_updateOpenButton()
+    _onyx_openKeyButton.BackgroundColor3 = theme.ButtonBg
+    _onyx_openKeyButton.TextColor3 = theme.ButtonText
+    _onyx_openKeyStroke.Color = _onyx_waitingForOpenKey and theme.Accent or theme.Border
+    _onyx_updateHalloweenDecorations(_onyx_currentThemeName)
+
+    if _onyx_themePicker then
+        local themeListObject = _onyx_themePicker:FindFirstChild("ThemeList")
+        if themeListObject and themeListObject:IsA("ScrollingFrame") then
+            themeListObject.BackgroundColor3 = theme.ScrollBg
+            themeListObject.ScrollBarImageColor3 = theme.Accent
+        end
+    end
+
+    for name, data in pairs(_onyx_themePickerButtons) do
+        local selected = name == _onyx_currentThemeName
+        data.button.Text = selected and "ON" or "OFF"
+        data.button.BackgroundColor3 = selected and theme.AccentSoft or theme.ButtonBg
+        data.button.TextColor3 = selected and theme.AccentBright or theme.ButtonText
+        data.stroke.Color = selected and theme.Accent or theme.Border
+        data.row.BackgroundColor3 = theme.PanelRowBg
+        data.rowStroke.Color = theme.Border
+    end
+
+    if _onyx_themePicker then
+        _onyx_themePicker.BackgroundColor3 = theme.MainBg
+        local pickerStroke = _onyx_themePicker:FindFirstChild("PickerStroke")
+        if pickerStroke and pickerStroke:IsA("UIStroke") then pickerStroke.Color = theme.Border end
+        local pickerTitle = _onyx_themePicker:FindFirstChild("PickerTitle")
+        if pickerTitle and pickerTitle:IsA("TextLabel") then pickerTitle.TextColor3 = theme.PrimaryText end
+        local pickerHint = _onyx_themePicker:FindFirstChild("PickerHint")
+        if pickerHint and pickerHint:IsA("TextLabel") then pickerHint.TextColor3 = theme.MutedText end
+        local pickerClose = _onyx_themePicker:FindFirstChild("PickerClose")
+        if pickerClose and pickerClose:IsA("TextButton") then pickerClose.TextColor3 = theme.SecondaryText end
+    end
+end
+
+-- =========================================
+-- EXPLOIT: ITEM TELEPORT
+-- =========================================
+
+_onyx_findItemInstance = nil
+_onyx_getItemAdornee = nil
+
+_onyx_itemTPPanel = nil
+
+itemTPRow, itemTPRowStroke = _onyx_makeRow(_onyx_exploitPage, 75, 46)
+itemTPLabel = _onyx_makeLabel(itemTPRow, "Item Teleport", 150)
+
+itemTPButton = Instance.new("TextButton")
+itemTPButton.Size = UDim2.fromOffset(110, 28)
+itemTPButton.Position = UDim2.new(1, -120, 0.5, -14)
+itemTPButton.BackgroundColor3 = Color3.fromRGB(18, 20, 30)
+itemTPButton.BorderSizePixel = 0
+itemTPButton.Text = "OPEN"
+itemTPButton.TextColor3 = Color3.fromRGB(205, 205, 218)
+itemTPButton.TextSize = 10
+itemTPButton.Font = Enum.Font.GothamMedium
+itemTPButton.AutoButtonColor = false
+itemTPButton.Parent = itemTPRow
+
+itemTPButtonCorner = Instance.new("UICorner")
+itemTPButtonCorner.CornerRadius = UDim.new(0, 4)
+itemTPButtonCorner.Parent = itemTPButton
+
+itemTPButtonStroke = Instance.new("UIStroke")
+itemTPButtonStroke.Color = Color3.fromRGB(70, 74, 98)
+itemTPButtonStroke.Thickness = 1
+itemTPButtonStroke.Parent = itemTPButton
+
+function _onyx_updateItemTPButton()
+    if _onyx_itemTPPanel and _onyx_itemTPPanel.Visible then
+        itemTPButton.Text = "HIDE"
+        itemTPButton.TextColor3 = Color3.fromRGB(225, 225, 235)
+        itemTPButton.BackgroundColor3 = Color3.fromRGB(25, 27, 40)
+        itemTPButtonStroke.Color = Color3.fromRGB(75, 80, 115)
+    else
+        itemTPButton.Text = "OPEN"
+        itemTPButton.TextColor3 = Color3.fromRGB(205, 205, 218)
+        itemTPButton.BackgroundColor3 = Color3.fromRGB(18, 20, 30)
+        itemTPButtonStroke.Color = Color3.fromRGB(70, 74, 98)
+    end
+end
+
+
+-- =========================================
+-- SPEED (MOVED TO MISC)
+-- =========================================
+
+_onyx_addText(_onyx_miscPage, "Movement", 45)
+
+_onyx_speedEnabled = false
+_onyx_walkSpeed = 50
+_onyx_speedKey = Enum.KeyCode.F
+_onyx_waitingForSpeedKey = false
+_onyx_savedWalkSpeed = nil
+_onyx_savedSpawnCFrame = nil
+_onyx_speedHeartbeat = nil
+
+_onyx_speedRow, _onyx_speedRowStroke = _onyx_makeRow(_onyx_miscPage, 75, 46)
+
+_onyx_speedLabel = _onyx_makeLabel(_onyx_speedRow, "Speed", 335)
+
+_onyx_speedValue = Instance.new("TextLabel")
+_onyx_speedValue.Size = UDim2.fromOffset(42, 28)
+_onyx_speedValue.Position = UDim2.fromOffset(158, 9)
+_onyx_speedValue.BackgroundColor3 = Color3.fromRGB(18, 20, 30)
+_onyx_speedValue.BorderSizePixel = 0
+_onyx_speedValue.TextColor3 = Color3.fromRGB(225, 225, 235)
+_onyx_speedValue.TextSize = 11
+_onyx_speedValue.Font = Enum.Font.GothamMedium
+_onyx_speedValue.Parent = _onyx_speedRow
+
+_onyx_speedValueCorner = Instance.new("UICorner")
+_onyx_speedValueCorner.CornerRadius = UDim.new(0, 4)
+_onyx_speedValueCorner.Parent = _onyx_speedValue
+
+_onyx_speedMinus = Instance.new("TextButton")
+_onyx_speedMinus.Size = UDim2.fromOffset(28, 28)
+_onyx_speedMinus.Position = UDim2.fromOffset(126, 9)
+_onyx_speedMinus.BackgroundColor3 = Color3.fromRGB(18, 20, 30)
+_onyx_speedMinus.BorderSizePixel = 0
+_onyx_speedMinus.Text = "-"
+_onyx_speedMinus.TextColor3 = Color3.fromRGB(185, 185, 200)
+_onyx_speedMinus.TextSize = 16
+_onyx_speedMinus.Font = Enum.Font.GothamMedium
+_onyx_speedMinus.AutoButtonColor = false
+_onyx_speedMinus.Parent = _onyx_speedRow
+
+_onyx_speedMinusCorner = Instance.new("UICorner")
+_onyx_speedMinusCorner.CornerRadius = UDim.new(0, 4)
+_onyx_speedMinusCorner.Parent = _onyx_speedMinus
+
+_onyx_speedPlus = Instance.new("TextButton")
+_onyx_speedPlus.Size = UDim2.fromOffset(28, 28)
+_onyx_speedPlus.Position = UDim2.fromOffset(206, 9)
+_onyx_speedPlus.BackgroundColor3 = Color3.fromRGB(18, 20, 30)
+_onyx_speedPlus.BorderSizePixel = 0
+_onyx_speedPlus.Text = "+"
+_onyx_speedPlus.TextColor3 = Color3.fromRGB(185, 185, 200)
+_onyx_speedPlus.TextSize = 15
+_onyx_speedPlus.Font = Enum.Font.GothamMedium
+_onyx_speedPlus.AutoButtonColor = false
+_onyx_speedPlus.Parent = _onyx_speedRow
+
+_onyx_speedPlusCorner = Instance.new("UICorner")
+_onyx_speedPlusCorner.CornerRadius = UDim.new(0, 4)
+_onyx_speedPlusCorner.Parent = _onyx_speedPlus
+
+_onyx_speedToggle, _onyx_speedToggleStroke = _onyx_makeToggle(_onyx_speedRow)
+_onyx_speedToggle.Position = UDim2.new(1, -278, 0.5, -14)
+
+_onyx_speedKeyButton = Instance.new("TextButton")
+_onyx_speedKeyButton.Size = UDim2.fromOffset(90, 28)
+_onyx_speedKeyButton.Position = UDim2.new(1, -188, 0.5, -14)
+_onyx_speedKeyButton.BackgroundColor3 = Color3.fromRGB(18, 20, 30)
+_onyx_speedKeyButton.BorderSizePixel = 0
+_onyx_speedKeyButton.Text = "F"
+_onyx_speedKeyButton.TextColor3 = Color3.fromRGB(220, 220, 230)
+_onyx_speedKeyButton.TextSize = 11
+_onyx_speedKeyButton.Font = Enum.Font.GothamMedium
+_onyx_speedKeyButton.AutoButtonColor = false
+_onyx_speedKeyButton.Parent = _onyx_speedRow
+
+_onyx_speedKeyCorner = Instance.new("UICorner")
+_onyx_speedKeyCorner.CornerRadius = UDim.new(0, 4)
+_onyx_speedKeyCorner.Parent = _onyx_speedKeyButton
+
+_onyx_speedKeyStroke = Instance.new("UIStroke")
+_onyx_speedKeyStroke.Color = Color3.fromRGB(55, 58, 80)
+_onyx_speedKeyStroke.Thickness = 1
+_onyx_speedKeyStroke.Parent = _onyx_speedKeyButton
+
+function _onyx_getHumanoid()
+    local character = _onyx_player.Character
+    if not character then
+        return nil
+    end
+    return character:FindFirstChildOfClass("Humanoid")
+end
+
+-- =========================================
+-- EXPLOIT: AUTO STRONG
+-- =========================================
+
+_onyx_autoStrongEnabled = false
+_onyx_autoStrongConnection = nil
+_onyx_autoStrongAccumulator = 0
+_onyx_hiddenDumbbellParts = {}
+
+function _onyx_findDumbbellTool()
+    local character = _onyx_player.Character
+    local backpack = _onyx_player:FindFirstChildOfClass("Backpack")
+
+    local function isDumbbellTool(obj)
+        if not obj or not obj:IsA("Tool") then
+            return false
+        end
+
+        local name = string.lower(obj.Name)
+        return name:find("dumbbell", 1, true)
+            or name:find("гантел", 1, true)
+            or name:find("weight", 1, true)
+            or name:find("strength", 1, true)
+    end
+
+    if character then
+        for _, child in ipairs(character:GetChildren()) do
+            if isDumbbellTool(child) then
+                return child
+            end
+        end
+    end
+
+    if backpack then
+        for _, child in ipairs(backpack:GetChildren()) do
+            if isDumbbellTool(child) then
+                return child
+            end
+        end
+    end
+
+    return nil
+end
+
+function _onyx_hideDumbbell(tool)
+    if not tool then
+        return
+    end
+
+    for _, descendant in ipairs(tool:GetDescendants()) do
+        if descendant:IsA("BasePart") then
+            if _onyx_hiddenDumbbellParts[descendant] == nil then
+                _onyx_hiddenDumbbellParts[descendant] = descendant.LocalTransparencyModifier
+            end
+            descendant.LocalTransparencyModifier = 1
+        end
+    end
+end
+
+function _onyx_restoreDumbbell()
+    for part, transparency in pairs(_onyx_hiddenDumbbellParts) do
+        if part and part.Parent and part:IsA("BasePart") then
+            part.LocalTransparencyModifier = transparency
+        end
+    end
+    table.clear(_onyx_hiddenDumbbellParts)
+end
+
+_onyx_autoStrongToggle = nil
+_onyx_autoStrongToggleStroke = nil
+
+function _onyx_updateAutoStrongButton()
+    if _onyx_autoStrongEnabled then
+        _onyx_autoStrongToggle.Text = "ON"
+        _onyx_autoStrongToggle.TextColor3 = Color3.fromRGB(225, 240, 255)
+        _onyx_autoStrongToggle.BackgroundColor3 = Color3.fromRGB(24, 35, 48)
+        _onyx_autoStrongToggleStroke.Color = Color3.fromRGB(75, 145, 220)
+    else
+        _onyx_autoStrongToggle.Text = "OFF"
+        _onyx_autoStrongToggle.TextColor3 = Color3.fromRGB(145, 145, 160)
+        _onyx_autoStrongToggle.BackgroundColor3 = Color3.fromRGB(18, 20, 30)
+        _onyx_autoStrongToggleStroke.Color = Color3.fromRGB(35, 37, 52)
+    end
+end
+
+function _onyx_stopAutoStrong()
+    _onyx_autoStrongEnabled = false
+
+    if _onyx_autoStrongConnection then
+        _onyx_autoStrongConnection:Disconnect()
+        _onyx_autoStrongConnection = nil
+    end
+
+    _onyx_restoreDumbbell()
+    _onyx_updateAutoStrongButton()
+end
+
+function _onyx_startAutoStrong()
+    if _onyx_autoStrongEnabled then
+        return
+    end
+
+    _onyx_autoStrongEnabled = true
+    _onyx_updateAutoStrongButton()
+
+    _onyx_autoStrongAccumulator = 0
+    _onyx_autoStrongConnection = _onyx_RunService.Heartbeat:Connect(function(dt)
+        if not _onyx_autoStrongEnabled then
+            return
+        end
+
+        _onyx_autoStrongAccumulator += dt
+        if _onyx_autoStrongAccumulator < 0.12 then
+            return
+        end
+        _onyx_autoStrongAccumulator = 0
+
+        local humanoid = _onyx_getHumanoid()
+        local tool = _onyx_findDumbbellTool()
+
+        if not humanoid or humanoid.Health <= 0 or not tool then
+            return
+        end
+
+        -- Keep the dumbbell usable, but remove its visible model from the hands.
+        if tool.Parent ~= _onyx_player.Character then
+            pcall(function()
+                humanoid:EquipTool(tool)
+            end)
+        end
+
+        _onyx_hideDumbbell(tool)
+
+        if tool.Parent == _onyx_player.Character and tool.Enabled then
+            pcall(function()
+                tool:Activate()
+            end)
+        end
+    end)
+end
+
+function _onyx_toggleAutoStrong()
+    if _onyx_autoStrongEnabled then
+        _onyx_stopAutoStrong()
+    else
+        _onyx_startAutoStrong()
+    end
+end
+
+_onyx_autoStrongRow, _onyx_autoStrongRowStroke = _onyx_makeRow(_onyx_exploitPage, 128, 46)
+_onyx_autoStrongLabel = _onyx_makeLabel(_onyx_autoStrongRow, "Auto Strong", 110)
+_onyx_autoStrongToggle, _onyx_autoStrongToggleStroke = _onyx_makeToggle(_onyx_autoStrongRow)
+_onyx_updateAutoStrongButton()
+
+_onyx_autoStrongToggle.MouseButton1Click:Connect(_onyx_toggleAutoStrong)
+
+-- Capture the real in-game WalkSpeed once when the script starts.
+-- Flight/TP speed uses this value, not the Speed control from Misc.
+_onyx_initialPlayerWalkSpeed = nil -- kept for compatibility with the rest of the script
+do
+    local startupHumanoid = _onyx_getHumanoid()
+    if startupHumanoid then
+        _onyx_initialPlayerWalkSpeed = startupHumanoid.WalkSpeed
+    end
+end
+
+function _onyx_updateSpeedText()
+    _onyx_speedValue.Text = tostring(_onyx_walkSpeed)
+end
+
+function _onyx_updateSpeedKeyText()
+    _onyx_speedKeyButton.Text = _onyx_speedKey and _onyx_speedKey.Name or "None"
+end
+
+function _onyx_updateSpeedButton()
+    if _onyx_speedEnabled then
+        _onyx_speedToggle.Text = "ON"
+        _onyx_speedToggle.TextColor3 = Color3.fromRGB(225, 225, 235)
+        _onyx_speedToggle.BackgroundColor3 = Color3.fromRGB(25, 27, 40)
+        _onyx_speedToggleStroke.Color = Color3.fromRGB(75, 80, 115)
+    else
+        _onyx_speedToggle.Text = "OFF"
+        _onyx_speedToggle.TextColor3 = Color3.fromRGB(145, 145, 160)
+        _onyx_speedToggle.BackgroundColor3 = Color3.fromRGB(18, 20, 30)
+        _onyx_speedToggleStroke.Color = Color3.fromRGB(55, 58, 80)
+    end
+end
+
+function _onyx_applySpeedToHumanoid(humanoid)
+    if not humanoid or humanoid.Health <= 0 then
+        return
+    end
+
+    if _onyx_speedEnabled then
+        if _onyx_savedWalkSpeed == nil then
+            _onyx_savedWalkSpeed = humanoid.WalkSpeed
+        end
+        humanoid.WalkSpeed = _onyx_walkSpeed
+    end
+end
+
+function _onyx_stopSpeed()
+    if not _onyx_speedEnabled then
+        return
+    end
+
+    _onyx_speedEnabled = false
+
+    local humanoid = _onyx_getHumanoid()
+    if humanoid and _onyx_savedWalkSpeed ~= nil then
+        humanoid.WalkSpeed = _onyx_savedWalkSpeed
+    end
+
+    _onyx_savedWalkSpeed = nil
+    _onyx_updateSpeedButton()
+end
+
+function _onyx_startSpeed()
+    if _onyx_speedEnabled then
+        return
+    end
+
+    local humanoid = _onyx_getHumanoid()
+    _onyx_speedEnabled = true
+
+    if humanoid then
+        _onyx_savedWalkSpeed = humanoid.WalkSpeed
+        humanoid.WalkSpeed = _onyx_walkSpeed
+    end
+
+    _onyx_updateSpeedButton()
+end
+
+function _onyx_toggleSpeed()
+    if _onyx_speedEnabled then
+        _onyx_stopSpeed()
+    else
+        _onyx_startSpeed()
+    end
+end
+
+function _onyx_setWalkSpeed(value)
+    _onyx_walkSpeed = math.clamp(math.floor(value), 16, 500)
+    _onyx_updateSpeedText()
+
+
+    if _onyx_speedEnabled then
+        local humanoid = _onyx_getHumanoid()
+        if humanoid then
+            humanoid.WalkSpeed = _onyx_walkSpeed
+        end
+    end
+end
+
+_onyx_speedMinus.MouseButton1Click:Connect(function()
+    _onyx_setWalkSpeed(_onyx_walkSpeed - 10)
+end)
+
+_onyx_speedPlus.MouseButton1Click:Connect(function()
+    _onyx_setWalkSpeed(_onyx_walkSpeed + 10)
+end)
+
+_onyx_speedToggle.MouseButton1Click:Connect(_onyx_toggleSpeed)
+
+_onyx_speedKeyButton.MouseButton1Click:Connect(function()
+    _onyx_waitingForSpeedKey = not _onyx_waitingForSpeedKey
+
+    if _onyx_waitingForSpeedKey then
+        _onyx_speedKeyButton.Text = "PRESS KEY..."
+        _onyx_speedKeyButton.TextColor3 = Color3.fromRGB(225, 225, 235)
+        _onyx_speedKeyStroke.Color = Color3.fromRGB(75, 80, 115)
+    else
+        _onyx_updateSpeedKeyText()
+        _onyx_speedKeyStroke.Color = Color3.fromRGB(55, 58, 80)
+    end
+end)
+
+_onyx_updateSpeedText()
+_onyx_updateSpeedKeyText()
+_onyx_updateSpeedButton()
+
+_onyx_speedHeartbeat = _onyx_RunService.Heartbeat:Connect(function()
+    if not _onyx_speedEnabled then
+        return
+    end
+
+    local humanoid = _onyx_getHumanoid()
+    if humanoid and humanoid.Health > 0 and humanoid.WalkSpeed ~= _onyx_walkSpeed then
+        humanoid.WalkSpeed = _onyx_walkSpeed
+    end
+end)
+
+_onyx_player.CharacterAdded:Connect(function(character)
+    local humanoid = character:WaitForChild("Humanoid", 10)
+    local root = character:WaitForChild("HumanoidRootPart", 10)
+    if root then
+        _onyx_savedSpawnCFrame = root.CFrame
+    end
+
+    -- Fallback only if the character was not ready when the script started.
+    -- After the first value is captured, keep it unchanged across respawns.
+    if _onyx_initialPlayerWalkSpeed == nil and humanoid then
+        _onyx_initialPlayerWalkSpeed = humanoid.WalkSpeed
+    end
+
+    if humanoid and _onyx_speedEnabled then
+        _onyx_savedWalkSpeed = humanoid.WalkSpeed
+        humanoid.WalkSpeed = _onyx_walkSpeed
+    end
+end)
+
+-- Reset once on startup so Spawn/TP can learn the actual post-respawn base.
+-- The CharacterAdded handler above will save the new spawn CFrame.
+_onyx_spawnResetDone = false
+
+function _onyx_resetPlayerForSpawnDetection()
+    if _onyx_spawnResetDone then
+        return
+    end
+
+    local character = _onyx_player.Character
+    if not character then
+        return
+    end
+
+    _onyx_savedSpawnCFrame = nil
+    _onyx_spawnResetDone = true
+
+    local humanoid = character:FindFirstChildOfClass("Humanoid")
+    if humanoid then
+        -- Trigger a normal character death so Roblox respawns the player at the
+        -- real server spawn. The CharacterAdded callback captures that position.
+        humanoid.Health = 0
+    else
+        character:BreakJoints()
+    end
+end
+
+if _onyx_player.Character then
+    task.defer(function()
+        task.wait(0.15)
+        _onyx_resetPlayerForSpawnDetection()
+    end)
+else
+    _onyx_spawnResetDone = true
+end
+
+_onyx_player.CharacterRemoving:Connect(function(character)
+    if not _onyx_speedEnabled then
+        return
+    end
+
+    local humanoid = character:FindFirstChildOfClass("Humanoid")
+    if humanoid and _onyx_savedWalkSpeed ~= nil then
+        humanoid.WalkSpeed = _onyx_savedWalkSpeed
+    end
+
+    _onyx_savedWalkSpeed = nil
+end)
+
+-- =========================================
+-- PLAYER ESP - BEAUTIFUL
+-- =========================================
+
+_onyx_addText(_onyx_miscPage, "Players", 131)
+
+_onyx_playerESPEnabled = false
+_onyx_playerESPEntries = {}
+_onyx_playerESPConnections = {}
+
+_onyx_playerESPRow = _onyx_makeRow(_onyx_miscPage, 161, 46)
+_onyx_playerESPLabel = _onyx_makeLabel(_onyx_playerESPRow, "Player ESP", 110)
+_onyx_playerESPToggle, _onyx_playerESPToggleStroke = _onyx_makeToggle(_onyx_playerESPRow)
+
+function _onyx_destroyPlayerESP(targetPlayer)
+    local entry = _onyx_playerESPEntries[targetPlayer]
+    if not entry then
+        return
+    end
+
+    if entry.highlight then
+        entry.highlight:Destroy()
+    end
+    if entry.billboard then
+        entry.billboard:Destroy()
+    end
+
+    _onyx_playerESPEntries[targetPlayer] = nil
+end
+
+function _onyx_findRootPart(character)
+    return character:FindFirstChild("HumanoidRootPart")
+        or character:FindFirstChild("UpperTorso")
+        or character:FindFirstChild("Torso")
+        or character:FindFirstChildWhichIsA("BasePart")
+end
+
+function _onyx_createPlayerESP(targetPlayer)
+    if not _onyx_playerESPEnabled or targetPlayer == _onyx_player then
+        return
+    end
+
+    local character = targetPlayer.Character
+    if not character then
+        return
+    end
+
+    local root = _onyx_findRootPart(character)
+    local humanoid = character:FindFirstChildOfClass("Humanoid")
+    if not root or not humanoid then
+        return
+    end
+
+    _onyx_destroyPlayerESP(targetPlayer)
+
+    local highlight = Instance.new("Highlight")
+    highlight.Name = "PotassiumPlayerESP"
+    highlight.Adornee = character
+    highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+    highlight.FillColor = Color3.fromRGB(85, 170, 255)
+    highlight.OutlineColor = Color3.fromRGB(210, 235, 255)
+    highlight.FillTransparency = 0.82
+    highlight.OutlineTransparency = 0.08
+    highlight.Parent = character
+
+    local billboard = Instance.new("BillboardGui")
+    billboard.Name = "PotassiumPlayerESPInfo"
+    billboard.Adornee = root
+    billboard.AlwaysOnTop = true
+    billboard.Size = UDim2.fromOffset(190, 48)
+    billboard.StudsOffset = Vector3.new(0, 3.15, 0)
+    billboard.MaxDistance = 5000
+    billboard.Parent = _onyx_gui
+
+    local background = Instance.new("Frame")
+    background.Size = UDim2.fromScale(1, 1)
+    background.BackgroundColor3 = Color3.fromRGB(8, 10, 16)
+    background.BackgroundTransparency = 0.2
+    background.BorderSizePixel = 0
+    background.Parent = billboard
+
+    local backgroundCorner = Instance.new("UICorner")
+    backgroundCorner.CornerRadius = UDim.new(0, 6)
+    backgroundCorner.Parent = background
+
+    local backgroundStroke = Instance.new("UIStroke")
+    backgroundStroke.Color = Color3.fromRGB(75, 145, 220)
+    backgroundStroke.Thickness = 1
+    backgroundStroke.Transparency = 0.15
+    backgroundStroke.Parent = background
+
+    local nameLabel = Instance.new("TextLabel")
+    nameLabel.Size = UDim2.new(1, -12, 0, 22)
+    nameLabel.Position = UDim2.fromOffset(6, 3)
+    nameLabel.BackgroundTransparency = 1
+    nameLabel.Text = targetPlayer.DisplayName .. "  @" .. targetPlayer.Name
+    nameLabel.TextColor3 = Color3.fromRGB(235, 245, 255)
+    nameLabel.TextSize = 11
+    nameLabel.Font = Enum.Font.GothamMedium
+    nameLabel.TextXAlignment = Enum.TextXAlignment.Center
+    nameLabel.TextTruncate = Enum.TextTruncate.AtEnd
+    nameLabel.Parent = background
+
+    local infoLabel = Instance.new("TextLabel")
+    infoLabel.Size = UDim2.new(1, -12, 0, 18)
+    infoLabel.Position = UDim2.fromOffset(6, 25)
+    infoLabel.BackgroundTransparency = 1
+    infoLabel.Text = "HP 100  •  0 studs"
+    infoLabel.TextColor3 = Color3.fromRGB(165, 205, 235)
+    infoLabel.TextSize = 10
+    infoLabel.Font = Enum.Font.Gotham
+    infoLabel.TextXAlignment = Enum.TextXAlignment.Center
+    infoLabel.Parent = background
+
+    _onyx_playerESPEntries[targetPlayer] = {
+        character = character,
+        root = root,
+        humanoid = humanoid,
+        highlight = highlight,
+        billboard = billboard,
+        infoLabel = infoLabel,
+    }
+end
+
+function _onyx_updatePlayerESPButton()
+    if _onyx_playerESPEnabled then
+        _onyx_playerESPToggle.Text = "ON"
+        _onyx_playerESPToggle.TextColor3 = Color3.fromRGB(225, 240, 255)
+        _onyx_playerESPToggle.BackgroundColor3 = Color3.fromRGB(24, 35, 48)
+        _onyx_playerESPToggleStroke.Color = Color3.fromRGB(75, 145, 220)
+    else
+        _onyx_playerESPToggle.Text = "OFF"
+        _onyx_playerESPToggle.TextColor3 = Color3.fromRGB(145, 145, 160)
+        _onyx_playerESPToggle.BackgroundColor3 = Color3.fromRGB(18, 20, 30)
+        _onyx_playerESPToggleStroke.Color = Color3.fromRGB(35, 37, 52)
+    end
+end
+
+function _onyx_startPlayerESP()
+    if _onyx_playerESPEnabled then
+        return
+    end
+
+    _onyx_playerESPEnabled = true
+    _onyx_updatePlayerESPButton()
+
+    for _, targetPlayer in ipairs(_onyx_Players:GetPlayers()) do
+        if targetPlayer ~= _onyx_player then
+            task.defer(_onyx_createPlayerESP, targetPlayer)
+        end
+    end
+end
+
+function _onyx_stopPlayerESP()
+    _onyx_playerESPEnabled = false
+
+    for targetPlayer in pairs(_onyx_playerESPEntries) do
+        _onyx_destroyPlayerESP(targetPlayer)
+    end
+
+    _onyx_updatePlayerESPButton()
+end
+
+_onyx_playerESPToggle.MouseButton1Click:Connect(function()
+    if _onyx_playerESPEnabled then
+        _onyx_stopPlayerESP()
+    else
+        _onyx_startPlayerESP()
+    end
+end)
+
+function _onyx_watchPlayer(targetPlayer)
+    if targetPlayer == _onyx_player then
+        return
+    end
+
+    table.insert(_onyx_playerESPConnections, targetPlayer.CharacterAdded:Connect(function()
+        if _onyx_playerESPEnabled then
+            task.wait(0.15)
+            _onyx_createPlayerESP(targetPlayer)
+        end
+    end))
+
+    table.insert(_onyx_playerESPConnections, targetPlayer.CharacterRemoving:Connect(function()
+        _onyx_destroyPlayerESP(targetPlayer)
+    end))
+end
+
+for _, targetPlayer in ipairs(_onyx_Players:GetPlayers()) do
+    _onyx_watchPlayer(targetPlayer)
+end
+
+table.insert(_onyx_playerESPConnections, _onyx_Players.PlayerAdded:Connect(function(targetPlayer)
+    _onyx_watchPlayer(targetPlayer)
+    if _onyx_playerESPEnabled then
+        task.defer(_onyx_createPlayerESP, targetPlayer)
+    end
+end))
+
+table.insert(_onyx_playerESPConnections, _onyx_Players.PlayerRemoving:Connect(function(targetPlayer)
+    _onyx_destroyPlayerESP(targetPlayer)
+end))
+
+_onyx_playerESPHeartbeat = _onyx_RunService.Heartbeat:Connect(function()
+    if not _onyx_playerESPEnabled or not _onyx_player.Character then
+        return
+    end
+
+    local myRoot = _onyx_findRootPart(_onyx_player.Character)
+    if not myRoot then
+        return
+    end
+
+    for targetPlayer, entry in pairs(_onyx_playerESPEntries) do
+        if entry.root and entry.root.Parent and entry.humanoid and entry.humanoid.Parent then
+            local distance = (myRoot.Position - entry.root.Position).Magnitude
+            local hp = math.max(0, math.floor(entry.humanoid.Health + 0.5))
+            entry.infoLabel.Text = string.format("HP %d  •  %d studs", hp, math.floor(distance + 0.5))
+        else
+            _onyx_destroyPlayerESP(targetPlayer)
+        end
+    end
+end)
+
+-- =========================================
+-- ITEM ESP SETTINGS
+-- one visual per item name
+-- =========================================
+
+_onyx_itemNames = {
+    "Traffic Cone",
+    "TrashBox",
+    "Water Cooler",
+    "Fridge",
+    "IronSafe",
+    "Office Chair",
+    "Pigeon",
+    "Battery",
+    "Beach chair",
+    "Bench",
+    "BusStop",
+    "Calendars",
+    "Couch",
+    "Crate",
+    "Anvil",
+}
+
+-- =========================================
+-- ITEM TELEPORT MINI UI
+-- =========================================
+
+_onyx_itemTPPanel = Instance.new("Frame")
+_onyx_itemTPPanel.Name = "ItemTPPanel"
+_onyx_itemTPPanel.Size = UDim2.fromOffset(310, 430)
+_onyx_itemTPPanel.Position = UDim2.new(0.5, -680, 0.5, -215)
+_onyx_itemTPPanel.BackgroundColor3 = Color3.fromRGB(8, 9, 16)
+_onyx_itemTPPanel.BorderSizePixel = 0
+_onyx_itemTPPanel.Visible = false
+_onyx_itemTPPanel.ZIndex = 30
+_onyx_itemTPPanel.Parent = _onyx_gui
+
+_onyx_itemTPPanelCorner = Instance.new("UICorner")
+_onyx_itemTPPanelCorner.CornerRadius = UDim.new(0, 7)
+_onyx_itemTPPanelCorner.Parent = _onyx_itemTPPanel
+
+_onyx_itemTPPanelStroke = Instance.new("UIStroke")
+_onyx_itemTPPanelStroke.Color = Color3.fromRGB(68, 72, 96)
+_onyx_itemTPPanelStroke.Thickness = 1
+_onyx_itemTPPanelStroke.Parent = _onyx_itemTPPanel
+
+_onyx_itemTPTitle = Instance.new("TextLabel")
+_onyx_itemTPTitle.Size = UDim2.new(1, -84, 0, 34)
+_onyx_itemTPTitle.Position = UDim2.fromOffset(12, 0)
+_onyx_itemTPTitle.BackgroundTransparency = 1
+_onyx_itemTPTitle.Text = "Item Teleport"
+_onyx_itemTPTitle.TextColor3 = Color3.fromRGB(225, 225, 235)
+_onyx_itemTPTitle.TextSize = 13
+_onyx_itemTPTitle.Font = Enum.Font.GothamMedium
+_onyx_itemTPTitle.TextXAlignment = Enum.TextXAlignment.Left
+_onyx_itemTPTitle.ZIndex = 31
+_onyx_itemTPTitle.Parent = _onyx_itemTPPanel
+
+_onyx_itemTPHide = Instance.new("TextButton")
+_onyx_itemTPHide.Size = UDim2.fromOffset(32, 32)
+_onyx_itemTPHide.Position = UDim2.new(1, -68, 0, 0)
+_onyx_itemTPHide.BackgroundTransparency = 1
+_onyx_itemTPHide.Text = "−"
+_onyx_itemTPHide.TextColor3 = Color3.fromRGB(160, 160, 175)
+_onyx_itemTPHide.TextSize = 20
+_onyx_itemTPHide.Font = Enum.Font.GothamMedium
+_onyx_itemTPHide.AutoButtonColor = false
+_onyx_itemTPHide.ZIndex = 31
+_onyx_itemTPHide.Parent = _onyx_itemTPPanel
+
+_onyx_itemTPClose = Instance.new("TextButton")
+_onyx_itemTPClose.Size = UDim2.fromOffset(32, 32)
+_onyx_itemTPClose.Position = UDim2.new(1, -34, 0, 0)
+_onyx_itemTPClose.BackgroundTransparency = 1
+_onyx_itemTPClose.Text = "×"
+_onyx_itemTPClose.TextColor3 = Color3.fromRGB(180, 180, 195)
+_onyx_itemTPClose.TextSize = 20
+_onyx_itemTPClose.Font = Enum.Font.GothamMedium
+_onyx_itemTPClose.AutoButtonColor = false
+_onyx_itemTPClose.ZIndex = 31
+_onyx_itemTPClose.Parent = _onyx_itemTPPanel
+
+_onyx_itemTPSpeedLabel = Instance.new("TextLabel")
+_onyx_itemTPSpeedLabel.Size = UDim2.new(1, -24, 0, 25)
+_onyx_itemTPSpeedLabel.Position = UDim2.fromOffset(12, 36)
+_onyx_itemTPSpeedLabel.BackgroundTransparency = 1
+_onyx_itemTPSpeedLabel.Text = "Flight speed: player's starting WalkSpeed"
+_onyx_itemTPSpeedLabel.TextColor3 = Color3.fromRGB(150, 155, 172)
+_onyx_itemTPSpeedLabel.TextSize = 10
+_onyx_itemTPSpeedLabel.Font = Enum.Font.Gotham
+_onyx_itemTPSpeedLabel.TextXAlignment = Enum.TextXAlignment.Left
+_onyx_itemTPSpeedLabel.ZIndex = 31
+_onyx_itemTPSpeedLabel.Parent = _onyx_itemTPPanel
+
+_onyx_itemTPScroll = Instance.new("ScrollingFrame")
+_onyx_itemTPScroll.Size = UDim2.new(1, -24, 1, -72)
+_onyx_itemTPScroll.Position = UDim2.fromOffset(12, 60)
+_onyx_itemTPScroll.BackgroundColor3 = Color3.fromRGB(10, 11, 18)
+_onyx_itemTPScroll.BorderSizePixel = 0
+_onyx_itemTPScroll.ScrollBarThickness = 3
+_onyx_itemTPScroll.ScrollBarImageTransparency = 0.2
+_onyx_itemTPScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
+_onyx_itemTPScroll.ZIndex = 31
+_onyx_itemTPScroll.Parent = _onyx_itemTPPanel
+
+_onyx_itemTPScrollCorner = Instance.new("UICorner")
+_onyx_itemTPScrollCorner.CornerRadius = UDim.new(0, 5)
+_onyx_itemTPScrollCorner.Parent = _onyx_itemTPScroll
+
+_onyx_itemTPLayout = Instance.new("UIListLayout")
+_onyx_itemTPLayout.Padding = UDim.new(0, 5)
+_onyx_itemTPLayout.SortOrder = Enum.SortOrder.LayoutOrder
+_onyx_itemTPLayout.Parent = _onyx_itemTPScroll
+
+_onyx_itemTPTeleporting = false
+_onyx_itemTPConnection = nil
+itemTPHumanoid = nil
+itemTPRoot = nil
+itemTPSavedWalkSpeed = nil
+itemTPNoClipParts = {}
+
+
+function _onyx_getItemPosition(instance)
+    local part = _onyx_getItemAdornee(instance)
+    if not part then
+        return nil
+    end
+    return part.Position
+end
+
+function _onyx_restoreItemTPNoClip()
+    for part, canCollide in pairs(itemTPNoClipParts) do
+        if part and part.Parent and part:IsA("BasePart") then
+            part.CanCollide = canCollide
+        end
+    end
+    table.clear(itemTPNoClipParts)
+end
+
+function _onyx_enableItemTPNoClip(character)
+    _onyx_restoreItemTPNoClip()
+    if not character then
+        return
+    end
+
+    for _, descendant in ipairs(character:GetDescendants()) do
+        if descendant:IsA("BasePart") then
+            itemTPNoClipParts[descendant] = descendant.CanCollide
+            descendant.CanCollide = false
+        end
+    end
+end
+
+function _onyx_refreshItemTPNoClip()
+    if not _onyx_itemTPTeleporting or not _onyx_player.Character then
+        return
+    end
+
+    for _, descendant in ipairs(_onyx_player.Character:GetDescendants()) do
+        if descendant:IsA("BasePart") then
+            if itemTPNoClipParts[descendant] == nil then
+                itemTPNoClipParts[descendant] = descendant.CanCollide
+            end
+            descendant.CanCollide = false
+        end
+    end
+end
+
+function _onyx_stopItemTP()
+    _onyx_itemTPTeleporting = false
+
+    if _onyx_itemTPConnection then
+        _onyx_itemTPConnection:Disconnect()
+        _onyx_itemTPConnection = nil
+    end
+
+    if itemTPHumanoid and itemTPSavedWalkSpeed ~= nil and itemTPHumanoid.Parent then
+        itemTPHumanoid.WalkSpeed = itemTPSavedWalkSpeed
+    end
+
+    if itemTPHumanoid then
+        itemTPHumanoid.AutoRotate = true
+    end
+
+    _onyx_restoreItemTPNoClip()
+
+    itemTPHumanoid = nil
+    itemTPRoot = nil
+    itemTPSavedWalkSpeed = nil
+end
+
+function _onyx_startItemTPFlight(targetCFrame, flightSpeed, secondTargetCFrame)
+    _onyx_stopItemTP()
+
+    if not targetCFrame then
+        return
+    end
+
+    local character = _onyx_player.Character
+    local root = character and _onyx_findRootPart(character)
+    local humanoid = _onyx_getHumanoid()
+    if not root or not humanoid then
+        return
+    end
+
+    _onyx_itemTPTeleporting = true
+    itemTPHumanoid = humanoid
+    itemTPRoot = root
+    itemTPSavedWalkSpeed = humanoid.WalkSpeed
+    humanoid.AutoRotate = false
+
+    -- NoClip exists only for the duration of the active TP flight.
+    _onyx_enableItemTPNoClip(character)
+
+    -- Keep the requested flight speed fixed for this trip.
+    flightSpeed = math.max(1, tonumber(flightSpeed) or 200)
+
+    _onyx_itemTPConnection = _onyx_RunService.Heartbeat:Connect(function(dt)
+        if not _onyx_itemTPTeleporting or not root.Parent or not humanoid.Parent then
+            _onyx_stopItemTP()
+            return
+        end
+
+        _onyx_refreshItemTPNoClip()
+
+        local targetPosition = targetCFrame.Position
+        local delta = targetPosition - root.Position
+        local distance = delta.Magnitude
+
+        if distance <= 2.5 then
+            root.CFrame = CFrame.new(targetPosition) * targetCFrame.Rotation
+            root.AssemblyLinearVelocity = Vector3.zero
+
+            -- Spawn TP can use a two-stage path: first 10 studs below the spawn,
+            -- then rise back up to the real spawn position. Item TP remains single-stage.
+            if secondTargetCFrame then
+                targetCFrame = secondTargetCFrame
+                secondTargetCFrame = nil
+                return
+            end
+
+            _onyx_stopItemTP()
+            return
+        end
+
+        local step = math.min(distance, flightSpeed * math.max(dt, 1 / 240))
+        local nextPosition = root.Position + delta.Unit * step
+        root.CFrame = CFrame.new(nextPosition) * root.CFrame.Rotation
+        root.AssemblyLinearVelocity = Vector3.zero
+    end)
+end
+
+function _onyx_flyToItem(itemName)
+    local instance = _onyx_findItemInstance(itemName)
+    if not instance then
+        return
+    end
+
+    local part = _onyx_getItemAdornee(instance)
+    if not part then
+        return
+    end
+
+    -- Every item TP button uses a fixed 200 studs/s flight speed.
+    _onyx_startItemTPFlight(CFrame.new(part.Position + Vector3.new(0, 2.5, 0)), 200)
+end
+
+function _onyx_flyToSpawn()
+    if not _onyx_savedSpawnCFrame then
+        return
+    end
+
+    -- Spawn TP uses the player's actual current WalkSpeed (the value used by the game).
+    local humanoid = _onyx_getHumanoid()
+    local serverWalkSpeed = humanoid and humanoid.WalkSpeed or 16
+
+    -- Spawn TP: first fly to a point 10 studs below the real spawn,
+    -- then fly upward onto the spawn point.
+    local belowSpawnCFrame = _onyx_savedSpawnCFrame * CFrame.new(0, -10, 0)
+    local finalSpawnCFrame = _onyx_savedSpawnCFrame * CFrame.new(0, 2, 0)
+
+    _onyx_startItemTPFlight(belowSpawnCFrame, serverWalkSpeed, finalSpawnCFrame)
+end
+
+itemTPRows = {}
+
+_onyx_spawnRow = Instance.new("Frame")
+_onyx_spawnRow.Size = UDim2.new(1, -8, 0, 34)
+_onyx_spawnRow.BackgroundColor3 = Color3.fromRGB(14, 15, 24)
+_onyx_spawnRow.BorderSizePixel = 0
+_onyx_spawnRow.LayoutOrder = 0
+_onyx_spawnRow.ZIndex = 32
+_onyx_spawnRow.Parent = _onyx_itemTPScroll
+
+_onyx_spawnRowCorner = Instance.new("UICorner")
+_onyx_spawnRowCorner.CornerRadius = UDim.new(0, 4)
+_onyx_spawnRowCorner.Parent = _onyx_spawnRow
+
+_onyx_spawnRowStroke = Instance.new("UIStroke")
+_onyx_spawnRowStroke.Color = Color3.fromRGB(45, 48, 65)
+_onyx_spawnRowStroke.Thickness = 1
+_onyx_spawnRowStroke.Parent = _onyx_spawnRow
+
+_onyx_spawnLabel = Instance.new("TextLabel")
+_onyx_spawnLabel.Size = UDim2.new(1, -148, 1, 0)
+_onyx_spawnLabel.Position = UDim2.fromOffset(9, 0)
+_onyx_spawnLabel.BackgroundTransparency = 1
+_onyx_spawnLabel.Text = "Spawn"
+_onyx_spawnLabel.TextColor3 = Color3.fromRGB(205, 205, 218)
+_onyx_spawnLabel.TextSize = 10
+_onyx_spawnLabel.Font = Enum.Font.GothamMedium
+_onyx_spawnLabel.TextXAlignment = Enum.TextXAlignment.Left
+_onyx_spawnLabel.ZIndex = 33
+_onyx_spawnLabel.Parent = _onyx_spawnRow
+
+_onyx_spawnKeyButton = Instance.new("TextButton")
+_onyx_spawnKeyButton.Size = UDim2.fromOffset(30, 24)
+_onyx_spawnKeyButton.Position = UDim2.new(1, -102, 0.5, -12)
+_onyx_spawnKeyButton.BackgroundColor3 = Color3.fromRGB(18, 20, 30)
+_onyx_spawnKeyButton.BorderSizePixel = 0
+_onyx_spawnKeyButton.Text = "Z"
+_onyx_spawnKeyButton.TextColor3 = Color3.fromRGB(205, 210, 225)
+_onyx_spawnKeyButton.TextSize = 9
+_onyx_spawnKeyButton.Font = Enum.Font.GothamMedium
+_onyx_spawnKeyButton.AutoButtonColor = false
+_onyx_spawnKeyButton.ZIndex = 33
+_onyx_spawnKeyButton.Parent = _onyx_spawnRow
+
+_onyx_spawnKeyButtonCorner = Instance.new("UICorner")
+_onyx_spawnKeyButtonCorner.CornerRadius = UDim.new(0, 4)
+_onyx_spawnKeyButtonCorner.Parent = _onyx_spawnKeyButton
+
+_onyx_spawnKeyButtonStroke = Instance.new("UIStroke")
+_onyx_spawnKeyButtonStroke.Color = Color3.fromRGB(70, 74, 98)
+_onyx_spawnKeyButtonStroke.Thickness = 1
+_onyx_spawnKeyButtonStroke.Parent = _onyx_spawnKeyButton
+
+_onyx_spawnTPButton = Instance.new("TextButton")
+_onyx_spawnTPButton.Size = UDim2.fromOffset(58, 24)
+_onyx_spawnTPButton.Position = UDim2.new(1, -66, 0.5, -12)
+_onyx_spawnTPButton.BackgroundColor3 = Color3.fromRGB(18, 20, 30)
+_onyx_spawnTPButton.BorderSizePixel = 0
+_onyx_spawnTPButton.Text = "TP"
+_onyx_spawnTPButton.TextColor3 = Color3.fromRGB(215, 220, 230)
+_onyx_spawnTPButton.TextSize = 9
+_onyx_spawnTPButton.Font = Enum.Font.GothamMedium
+_onyx_spawnTPButton.AutoButtonColor = false
+_onyx_spawnTPButton.ZIndex = 33
+_onyx_spawnTPButton.Parent = _onyx_spawnRow
+
+_onyx_spawnTPButtonCorner = Instance.new("UICorner")
+_onyx_spawnTPButtonCorner.CornerRadius = UDim.new(0, 4)
+_onyx_spawnTPButtonCorner.Parent = _onyx_spawnTPButton
+
+_onyx_spawnTPButtonStroke = Instance.new("UIStroke")
+_onyx_spawnTPButtonStroke.Color = Color3.fromRGB(70, 74, 98)
+_onyx_spawnTPButtonStroke.Thickness = 1
+_onyx_spawnTPButtonStroke.Parent = _onyx_spawnTPButton
+
+_onyx_spawnTPButton.MouseButton1Click:Connect(_onyx_flyToSpawn)
+
+for index, itemName in ipairs(_onyx_itemNames) do
+    local row = Instance.new("Frame")
+    row.Size = UDim2.new(1, -8, 0, 34)
+    row.BackgroundColor3 = Color3.fromRGB(14, 15, 24)
+    row.BorderSizePixel = 0
+    row.LayoutOrder = index
+    row.ZIndex = 32
+    row.Parent = _onyx_itemTPScroll
+
+    local rowCorner = Instance.new("UICorner")
+    rowCorner.CornerRadius = UDim.new(0, 4)
+    rowCorner.Parent = row
+
+    local rowStroke = Instance.new("UIStroke")
+    rowStroke.Color = Color3.fromRGB(60, 64, 86)
+    rowStroke.Thickness = 1
+    rowStroke.Parent = row
+
+    local nameLabel = Instance.new("TextLabel")
+    nameLabel.Size = UDim2.new(1, -82, 1, 0)
+    nameLabel.Position = UDim2.fromOffset(9, 0)
+    nameLabel.BackgroundTransparency = 1
+    nameLabel.Text = itemName
+    nameLabel.TextColor3 = Color3.fromRGB(205, 205, 218)
+    nameLabel.TextSize = 10
+    nameLabel.Font = Enum.Font.GothamMedium
+    nameLabel.TextXAlignment = Enum.TextXAlignment.Left
+    nameLabel.ZIndex = 33
+    nameLabel.Parent = row
+
+    local tpButton = Instance.new("TextButton")
+    tpButton.Size = UDim2.fromOffset(58, 24)
+    tpButton.Position = UDim2.new(1, -66, 0.5, -12)
+    tpButton.BackgroundColor3 = Color3.fromRGB(18, 20, 30)
+    tpButton.BorderSizePixel = 0
+    tpButton.Text = "TP"
+    tpButton.TextColor3 = Color3.fromRGB(215, 220, 230)
+    tpButton.TextSize = 9
+    tpButton.Font = Enum.Font.GothamMedium
+    tpButton.AutoButtonColor = false
+    tpButton.ZIndex = 33
+    tpButton.Parent = row
+
+    local tpButtonCorner = Instance.new("UICorner")
+    tpButtonCorner.CornerRadius = UDim.new(0, 4)
+    tpButtonCorner.Parent = tpButton
+
+    local tpButtonStroke = Instance.new("UIStroke")
+    tpButtonStroke.Color = Color3.fromRGB(55, 58, 80)
+    tpButtonStroke.Thickness = 1
+    tpButtonStroke.Parent = tpButton
+
+    tpButton.MouseButton1Click:Connect(function()
+        _onyx_flyToItem(itemName)
+    end)
+
+    itemTPRows[itemName] = {
+        row = row,
+        button = tpButton,
+        stroke = tpButtonStroke,
+    }
+end
+
+_onyx_itemTPLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+    _onyx_itemTPScroll.CanvasSize = UDim2.fromOffset(0, _onyx_itemTPLayout.AbsoluteContentSize.Y + 10)
+end)
+_onyx_itemTPScroll.CanvasSize = UDim2.fromOffset(0, _onyx_itemTPLayout.AbsoluteContentSize.Y + 10)
+
+itemTPButton.MouseButton1Click:Connect(function()
+    _onyx_itemTPPanel.Visible = not _onyx_itemTPPanel.Visible
+    _onyx_updateItemTPButton()
+end)
+
+_onyx_itemTPHide.MouseButton1Click:Connect(function()
+    _onyx_itemTPPanel.Visible = false
+    _onyx_updateItemTPButton()
+end)
+
+_onyx_itemTPClose.MouseButton1Click:Connect(function()
+    _onyx_itemTPPanel.Visible = false
+    _onyx_stopItemTP()
+    _onyx_updateItemTPButton()
+end)
+
+_onyx_updateItemTPButton()
+
+_onyx_itemTPDragging = false
+_onyx_itemTPDragStart = nil
+_onyx_itemTPStartPos = nil
+_onyx_itemTPDragInput = nil
+
+function _onyx_updateItemTPPanelDrag(input)
+    local delta = input.Position - _onyx_itemTPDragStart
+    _onyx_itemTPPanel.Position = UDim2.new(
+        _onyx_itemTPStartPos.X.Scale,
+        _onyx_itemTPStartPos.X.Offset + delta.X,
+        _onyx_itemTPStartPos.Y.Scale,
+        _onyx_itemTPStartPos.Y.Offset + delta.Y
+    )
+end
+
+_onyx_itemTPTitle.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        _onyx_itemTPDragging = true
+        _onyx_itemTPDragStart = input.Position
+        _onyx_itemTPStartPos = _onyx_itemTPPanel.Position
+
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                _onyx_itemTPDragging = false
+            end
+        end)
+    end
+end)
+
+_onyx_itemTPTitle.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement then
+        _onyx_itemTPDragInput = input
+    end
+end)
+
+_onyx_UserInputService.InputChanged:Connect(function(input)
+    if _onyx_itemTPDragging and input == _onyx_itemTPDragInput and input.UserInputType == Enum.UserInputType.MouseMovement then
+        _onyx_updateItemTPPanelDrag(input)
+    end
+end)
+
+_onyx_itemEnabled = {}
+for _, itemName in ipairs(_onyx_itemNames) do
+    _onyx_itemEnabled[itemName] = true
+end
+
+_onyx_itemESPEnabled = false
+_onyx_itemEntries = {}
+_onyx_itemRefreshConnection = nil
+_onyx_itemDescendantConnection = nil
+_onyx_itemChildConnection = nil
+
+function _onyx_getSpawnedItems()
+    return workspace:FindFirstChild("SpawnedItems")
+end
+
+function _onyx_normalizedName(value)
+    return string.lower((value or ""):gsub("%s+", ""))
+end
+
+_onyx_findItemInstance = function(itemName)
+    local _onyx_spawnedItems = _onyx_getSpawnedItems()
+    if not _onyx_spawnedItems then
+        return nil
+    end
+
+    local target = _onyx_normalizedName(itemName)
+
+    for _, child in ipairs(_onyx_spawnedItems:GetChildren()) do
+        if _onyx_normalizedName(child.Name) == target then
+            return child
+        end
+    end
+
+    for _, descendant in ipairs(_onyx_spawnedItems:GetDescendants()) do
+        if _onyx_normalizedName(descendant.Name) == target then
+            return descendant
+        end
+    end
+
+    return nil
+end
+
+function _onyx_destroyItemESP(itemName)
+    local entry = _onyx_itemEntries[itemName]
+    if not entry then
+        return
+    end
+
+    if entry.highlight then
+        entry.highlight:Destroy()
+    end
+    if entry.billboard then
+        entry.billboard:Destroy()
+    end
+
+    _onyx_itemEntries[itemName] = nil
+end
+
+_onyx_getItemAdornee = function(instance)
+    if instance:IsA("BasePart") then
+        return instance
+    end
+
+    if instance:IsA("Model") then
+        if instance.PrimaryPart then
+            return instance.PrimaryPart
+        end
+        return instance:FindFirstChildWhichIsA("BasePart", true)
+    end
+
+    return instance:FindFirstChildWhichIsA("BasePart", true)
+end
+
+function _onyx_createItemESP(itemName, instance)
+    if not _onyx_itemESPEnabled or not _onyx_itemEnabled[itemName] or not instance then
+        return
+    end
+
+    _onyx_destroyItemESP(itemName)
+
+    local adorneePart = _onyx_getItemAdornee(instance)
+    if not adorneePart then
+        return
+    end
+
+    local highlight = Instance.new("Highlight")
+    highlight.Name = "PotassiumItemESP"
+    local highlightAdornee = (instance:IsA("Model") or instance:IsA("BasePart")) and instance or adorneePart
+    highlight.Adornee = highlightAdornee
+    highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+    highlight.FillColor = Color3.fromRGB(255, 180, 70)
+    highlight.OutlineColor = Color3.fromRGB(255, 228, 165)
+    highlight.FillTransparency = 0.82
+    highlight.OutlineTransparency = 0.05
+    highlight.Parent = highlightAdornee
+
+    local billboard = Instance.new("BillboardGui")
+    billboard.Name = "PotassiumItemESPInfo"
+    billboard.Adornee = adorneePart
+    billboard.AlwaysOnTop = true
+    billboard.Size = UDim2.fromOffset(145, 28)
+    billboard.StudsOffset = Vector3.new(0, 2.25, 0)
+    billboard.MaxDistance = 5000
+    billboard.Parent = _onyx_gui
+
+    local background = Instance.new("Frame")
+    background.Size = UDim2.fromScale(1, 1)
+    background.BackgroundColor3 = Color3.fromRGB(10, 10, 15)
+    background.BackgroundTransparency = 0.2
+    background.BorderSizePixel = 0
+    background.Parent = billboard
+
+    local backgroundCorner = Instance.new("UICorner")
+    backgroundCorner.CornerRadius = UDim.new(0, 5)
+    backgroundCorner.Parent = background
+
+    local backgroundStroke = Instance.new("UIStroke")
+    backgroundStroke.Color = Color3.fromRGB(255, 180, 70)
+    backgroundStroke.Thickness = 1
+    backgroundStroke.Transparency = 0.1
+    backgroundStroke.Parent = background
+
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.new(1, -10, 1, 0)
+    label.Position = UDim2.fromOffset(5, 0)
+    label.BackgroundTransparency = 1
+    label.Text = itemName
+    label.TextColor3 = Color3.fromRGB(255, 239, 210)
+    label.TextSize = 10
+    label.Font = Enum.Font.GothamMedium
+    label.TextXAlignment = Enum.TextXAlignment.Center
+    label.TextTruncate = Enum.TextTruncate.AtEnd
+    label.Parent = background
+
+    _onyx_itemEntries[itemName] = {
+        instance = instance,
+        highlight = highlight,
+        billboard = billboard,
+    }
+end
+
+function _onyx_refreshItemESP(itemName)
+    if not _onyx_itemESPEnabled or not _onyx_itemEnabled[itemName] then
+        _onyx_destroyItemESP(itemName)
+        return
+    end
+
+    local instance = _onyx_findItemInstance(itemName)
+    local current = _onyx_itemEntries[itemName]
+
+    if current and current.instance == instance and instance and instance.Parent then
+        return
+    end
+
+    _onyx_destroyItemESP(itemName)
+
+    if instance then
+        _onyx_createItemESP(itemName, instance)
+    end
+end
+
+function _onyx_refreshAllItemESP()
+    if not _onyx_itemESPEnabled then
+        for itemName in pairs(_onyx_itemEntries) do
+            _onyx_destroyItemESP(itemName)
+        end
+        return
+    end
+
+    for _, itemName in ipairs(_onyx_itemNames) do
+        _onyx_refreshItemESP(itemName)
+    end
+end
+
+-- =========================================
+-- ITEM ESP MINI UI
+-- =========================================
+
+itemPanel = Instance.new("Frame")
+itemPanel.Name = "ESPItemsPanel"
+itemPanel.Size = UDim2.fromOffset(300, 430)
+itemPanel.Position = UDim2.new(0.5, 370, 0.5, -215)
+itemPanel.BackgroundColor3 = Color3.fromRGB(8, 9, 16)
+itemPanel.BorderSizePixel = 0
+itemPanel.Visible = false
+itemPanel.ZIndex = 20
+itemPanel.Parent = _onyx_gui
+
+_onyx_itemPanelCorner = Instance.new("UICorner")
+_onyx_itemPanelCorner.CornerRadius = UDim.new(0, 7)
+_onyx_itemPanelCorner.Parent = itemPanel
+
+_onyx_itemPanelStroke = Instance.new("UIStroke")
+_onyx_itemPanelStroke.Color = Color3.fromRGB(68, 72, 96)
+_onyx_itemPanelStroke.Thickness = 1
+_onyx_itemPanelStroke.Parent = itemPanel
+
+_onyx_itemPanelTitle = Instance.new("TextLabel")
+_onyx_itemPanelTitle.Size = UDim2.new(1, -84, 0, 34)
+_onyx_itemPanelTitle.Position = UDim2.fromOffset(12, 0)
+_onyx_itemPanelTitle.BackgroundTransparency = 1
+_onyx_itemPanelTitle.Text = "ESP Items"
+_onyx_itemPanelTitle.TextColor3 = Color3.fromRGB(225, 225, 235)
+_onyx_itemPanelTitle.TextSize = 13
+_onyx_itemPanelTitle.Font = Enum.Font.GothamMedium
+_onyx_itemPanelTitle.TextXAlignment = Enum.TextXAlignment.Left
+_onyx_itemPanelTitle.ZIndex = 21
+_onyx_itemPanelTitle.Parent = itemPanel
+
+_onyx_itemPanelHide = Instance.new("TextButton")
+_onyx_itemPanelHide.Size = UDim2.fromOffset(32, 32)
+_onyx_itemPanelHide.Position = UDim2.new(1, -68, 0, 0)
+_onyx_itemPanelHide.BackgroundTransparency = 1
+_onyx_itemPanelHide.Text = "−"
+_onyx_itemPanelHide.TextColor3 = Color3.fromRGB(160, 160, 175)
+_onyx_itemPanelHide.TextSize = 20
+_onyx_itemPanelHide.Font = Enum.Font.GothamMedium
+_onyx_itemPanelHide.AutoButtonColor = false
+_onyx_itemPanelHide.ZIndex = 21
+_onyx_itemPanelHide.Parent = itemPanel
+
+_onyx_itemPanelClose = Instance.new("TextButton")
+_onyx_itemPanelClose.Size = UDim2.fromOffset(32, 32)
+_onyx_itemPanelClose.Position = UDim2.new(1, -34, 0, 0)
+_onyx_itemPanelClose.BackgroundTransparency = 1
+_onyx_itemPanelClose.Text = "×"
+_onyx_itemPanelClose.TextColor3 = Color3.fromRGB(180, 180, 195)
+_onyx_itemPanelClose.TextSize = 20
+_onyx_itemPanelClose.Font = Enum.Font.GothamMedium
+_onyx_itemPanelClose.AutoButtonColor = false
+_onyx_itemPanelClose.ZIndex = 21
+_onyx_itemPanelClose.Parent = itemPanel
+
+_onyx_itemPanelHint = Instance.new("TextLabel")
+_onyx_itemPanelHint.Size = UDim2.new(1, -24, 0, 26)
+_onyx_itemPanelHint.Position = UDim2.fromOffset(12, 36)
+_onyx_itemPanelHint.BackgroundTransparency = 1
+_onyx_itemPanelHint.Text = "One ESP marker per item type"
+_onyx_itemPanelHint.TextColor3 = Color3.fromRGB(120, 125, 142)
+_onyx_itemPanelHint.TextSize = 10
+_onyx_itemPanelHint.Font = Enum.Font.Gotham
+_onyx_itemPanelHint.TextXAlignment = Enum.TextXAlignment.Left
+_onyx_itemPanelHint.ZIndex = 21
+_onyx_itemPanelHint.Parent = itemPanel
+
+_onyx_itemScroll = Instance.new("ScrollingFrame")
+_onyx_itemScroll.Size = UDim2.new(1, -24, 1, -78)
+_onyx_itemScroll.Position = UDim2.fromOffset(12, 66)
+_onyx_itemScroll.BackgroundColor3 = Color3.fromRGB(10, 11, 18)
+_onyx_itemScroll.BorderSizePixel = 0
+_onyx_itemScroll.ScrollBarThickness = 3
+_onyx_itemScroll.ScrollBarImageTransparency = 0.2
+_onyx_itemScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
+_onyx_itemScroll.ZIndex = 21
+_onyx_itemScroll.Parent = itemPanel
+
+_onyx_itemScrollCorner = Instance.new("UICorner")
+_onyx_itemScrollCorner.CornerRadius = UDim.new(0, 5)
+_onyx_itemScrollCorner.Parent = _onyx_itemScroll
+
+_onyx_itemListLayout = Instance.new("UIListLayout")
+_onyx_itemListLayout.Padding = UDim.new(0, 5)
+_onyx_itemListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+_onyx_itemListLayout.Parent = _onyx_itemScroll
+
+_onyx_itemRows = {}
+
+function _onyx_updateItemButton(button, stroke, enabled)
+    if enabled then
+        button.Text = "ON"
+        button.TextColor3 = Color3.fromRGB(255, 239, 210)
+        button.BackgroundColor3 = Color3.fromRGB(42, 32, 20)
+        stroke.Color = Color3.fromRGB(255, 180, 70)
+    else
+        button.Text = "OFF"
+        button.TextColor3 = Color3.fromRGB(145, 145, 160)
+        button.BackgroundColor3 = Color3.fromRGB(18, 20, 30)
+        stroke.Color = Color3.fromRGB(70, 74, 98)
+    end
+end
+
+for index, itemName in ipairs(_onyx_itemNames) do
+    local row = Instance.new("Frame")
+    row.Size = UDim2.new(1, -8, 0, 34)
+    row.BackgroundColor3 = Color3.fromRGB(14, 15, 24)
+    row.BorderSizePixel = 0
+    row.LayoutOrder = index
+    row.ZIndex = 22
+    row.Parent = _onyx_itemScroll
+
+    local rowCorner = Instance.new("UICorner")
+    rowCorner.CornerRadius = UDim.new(0, 4)
+    rowCorner.Parent = row
+
+    local rowStroke = Instance.new("UIStroke")
+    rowStroke.Color = Color3.fromRGB(60, 64, 86)
+    rowStroke.Thickness = 1
+    rowStroke.Parent = row
+
+    local nameLabel = Instance.new("TextLabel")
+    nameLabel.Size = UDim2.new(1, -82, 1, 0)
+    nameLabel.Position = UDim2.fromOffset(9, 0)
+    nameLabel.BackgroundTransparency = 1
+    nameLabel.Text = itemName
+    nameLabel.TextColor3 = Color3.fromRGB(205, 205, 218)
+    nameLabel.TextSize = 10
+    nameLabel.Font = Enum.Font.GothamMedium
+    nameLabel.TextXAlignment = Enum.TextXAlignment.Left
+    nameLabel.ZIndex = 23
+    nameLabel.Parent = row
+
+    local toggle, toggleStroke = Instance.new("TextButton"), nil
+    toggle.Size = UDim2.fromOffset(58, 24)
+    toggle.Position = UDim2.new(1, -66, 0.5, -12)
+    toggle.BackgroundColor3 = Color3.fromRGB(42, 32, 20)
+    toggle.BorderSizePixel = 0
+    toggle.Text = "ON"
+    toggle.TextColor3 = Color3.fromRGB(255, 239, 210)
+    toggle.TextSize = 9
+    toggle.Font = Enum.Font.GothamMedium
+    toggle.AutoButtonColor = false
+    toggle.ZIndex = 23
+    toggle.Parent = row
+
+    local toggleCorner = Instance.new("UICorner")
+    toggleCorner.CornerRadius = UDim.new(0, 4)
+    toggleCorner.Parent = toggle
+
+    toggleStroke = Instance.new("UIStroke")
+    toggleStroke.Color = Color3.fromRGB(255, 180, 70)
+    toggleStroke.Thickness = 1
+    toggleStroke.Parent = toggle
+
+    _onyx_itemRows[itemName] = {
+        button = toggle,
+        stroke = toggleStroke,
+    }
+
+    toggle.MouseButton1Click:Connect(function()
+        _onyx_itemEnabled[itemName] = not _onyx_itemEnabled[itemName]
+        _onyx_updateItemButton(toggle, toggleStroke, _onyx_itemEnabled[itemName])
+        _onyx_refreshItemESP(itemName)
+    end)
+end
+
+function _onyx_updateItemScrollSize()
+    _onyx_itemScroll.CanvasSize = UDim2.fromOffset(0, _onyx_itemListLayout.AbsoluteContentSize.Y + 10)
+end
+
+_onyx_itemListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(_onyx_updateItemScrollSize)
+_onyx_updateItemScrollSize()
+
+-- =========================================
+-- MISC ITEM ESP BUTTON
+-- =========================================
+
+_onyx_itemMainRow = _onyx_makeRow(_onyx_miscPage, 214, 46)
+_onyx_itemMainLabel = _onyx_makeLabel(_onyx_itemMainRow, "ESP Items", 150)
+
+itemMainButton = Instance.new("TextButton")
+itemMainButton.Size = UDim2.fromOffset(110, 28)
+itemMainButton.Position = UDim2.new(1, -120, 0.5, -14)
+itemMainButton.BackgroundColor3 = Color3.fromRGB(18, 20, 30)
+itemMainButton.BorderSizePixel = 0
+itemMainButton.Text = "OPEN"
+itemMainButton.TextColor3 = Color3.fromRGB(205, 205, 218)
+itemMainButton.TextSize = 10
+itemMainButton.Font = Enum.Font.GothamMedium
+itemMainButton.AutoButtonColor = false
+itemMainButton.Parent = _onyx_itemMainRow
+
+_onyx_itemMainButtonCorner = Instance.new("UICorner")
+_onyx_itemMainButtonCorner.CornerRadius = UDim.new(0, 4)
+_onyx_itemMainButtonCorner.Parent = itemMainButton
+
+_onyx_itemMainButtonStroke = Instance.new("UIStroke")
+_onyx_itemMainButtonStroke.Color = Color3.fromRGB(70, 74, 98)
+_onyx_itemMainButtonStroke.Thickness = 1
+_onyx_itemMainButtonStroke.Parent = itemMainButton
+
+function _onyx_updateItemMainButton()
+    if _onyx_itemESPEnabled then
+        itemMainButton.Text = itemPanel.Visible and "ON / HIDE" or "ON / OPEN"
+        itemMainButton.TextColor3 = Color3.fromRGB(255, 239, 210)
+        itemMainButton.BackgroundColor3 = Color3.fromRGB(42, 32, 20)
+        _onyx_itemMainButtonStroke.Color = Color3.fromRGB(255, 180, 70)
+    else
+        itemMainButton.Text = "OPEN"
+        itemMainButton.TextColor3 = Color3.fromRGB(205, 205, 218)
+        itemMainButton.BackgroundColor3 = Color3.fromRGB(18, 20, 30)
+        _onyx_itemMainButtonStroke.Color = Color3.fromRGB(70, 74, 98)
+    end
+end
+
+function _onyx_startItemESP()
+    _onyx_itemESPEnabled = true
+    _onyx_refreshAllItemESP()
+    itemPanel.Visible = true
+    _onyx_updateItemMainButton()
+end
+
+function _onyx_stopItemESP()
+    _onyx_itemESPEnabled = false
+    _onyx_refreshAllItemESP()
+    itemPanel.Visible = false
+    _onyx_updateItemMainButton()
+end
+
+itemMainButton.MouseButton1Click:Connect(function()
+    if not _onyx_itemESPEnabled then
+        _onyx_startItemESP()
+        return
+    end
+
+    if itemPanel.Visible then
+        _onyx_stopItemESP()
+    else
+        itemPanel.Visible = true
+        _onyx_updateItemMainButton()
+    end
+end)
+
+_onyx_itemPanelHide.MouseButton1Click:Connect(function()
+    itemPanel.Visible = false
+    _onyx_updateItemMainButton()
+end)
+
+_onyx_itemPanelClose.MouseButton1Click:Connect(function()
+    _onyx_stopItemESP()
+end)
+
+_onyx_itemRefreshConnection = task.spawn(function()
+    while _onyx_gui.Parent do
+        if _onyx_itemESPEnabled then
+            _onyx_refreshAllItemESP()
+        end
+        task.wait(0.75)
+    end
+end)
+
+function _onyx_connectItemContainer(container)
+    if _onyx_itemChildConnection then
+        _onyx_itemChildConnection:Disconnect()
+        _onyx_itemChildConnection = nil
+    end
+
+    if _onyx_itemDescendantConnection then
+        _onyx_itemDescendantConnection:Disconnect()
+        _onyx_itemDescendantConnection = nil
+    end
+
+    _onyx_itemChildConnection = container.ChildAdded:Connect(function()
+        if _onyx_itemESPEnabled then
+            task.defer(_onyx_refreshAllItemESP)
+        end
+    end)
+    _onyx_itemDescendantConnection = container.DescendantAdded:Connect(function()
+        if _onyx_itemESPEnabled then
+            task.defer(_onyx_refreshAllItemESP)
+        end
+    end)
+end
+
+_onyx_spawnedItems = _onyx_getSpawnedItems()
+if _onyx_spawnedItems then
+    _onyx_connectItemContainer(_onyx_spawnedItems)
+end
+
+workspace.ChildAdded:Connect(function(child)
+    if child.Name == "SpawnedItems" then
+        _onyx_connectItemContainer(child)
+        if _onyx_itemESPEnabled then
+            task.defer(_onyx_refreshAllItemESP)
+        end
+    end
+end)
+
+-- =========================================
+-- SIDEBAR BUTTONS
+-- =========================================
+
+buttons = {}
+_onyx_pages.__activePage = "Start"
+
+function _onyx_createButton(text, y)
+    local button = Instance.new("TextButton")
+    button.Size = UDim2.new(1, -10, 0, 32)
+    button.Position = UDim2.fromOffset(5, y)
+    button.BackgroundColor3 = Color3.fromRGB(11, 12, 21)
+    button.BorderSizePixel = 0
+    button.Text = text
+    button.TextColor3 = Color3.fromRGB(135, 137, 150)
+    button.TextSize = 12
+    button.Font = Enum.Font.GothamMedium
+    button.AutoButtonColor = false
+    button.Parent = _onyx_sidebar
+
+    local buttonCorner = Instance.new("UICorner")
+    buttonCorner.CornerRadius = UDim.new(0, 4)
+    buttonCorner.Parent = button
+
+    local buttonStroke = Instance.new("UIStroke")
+    buttonStroke.Color = Color3.fromRGB(70, 74, 98)
+    buttonStroke.Thickness = 1
+    buttonStroke.Parent = button
+
+    buttons[text] = {
+        Button = button,
+        Stroke = buttonStroke,
+    }
+
+    return button
+end
+
+_onyx_createButton("Start", 8)
+_onyx_exploitButton = _onyx_createButton("Exploit", 46)
+_onyx_miscButton = _onyx_createButton("Misc", 84)
+_onyx_settingsButton = _onyx_createButton("Settings", 122)
+
+function _onyx_showPage(name)
+    _onyx_pages.__activePage = name
+
+    for pageName, page in pairs(_onyx_pages) do
+        if typeof(page) == "Instance" then
+            page.Visible = pageName == name
+        end
+    end
+
+    for btnName, data in pairs(buttons) do
+        if btnName == name then
+            data.Button.BackgroundColor3 = Color3.fromRGB(25, 27, 40)
+            data.Button.TextColor3 = Color3.fromRGB(225, 225, 235)
+            data.Button.BackgroundColor3 = _onyx_currentTheme.AccentSoft
+            data.Stroke.Color = _onyx_currentTheme.Accent
+        else
+            data.Button.BackgroundColor3 = _onyx_currentTheme.SidebarBg
+            data.Button.TextColor3 = _onyx_currentTheme.SidebarText
+            data.Stroke.Color = _onyx_currentTheme.Border
+        end
+    end
+end
+
+_onyx_exploitButton.MouseButton1Click:Connect(function()
+    _onyx_showPage("Exploit")
+end)
+
+_onyx_miscButton.MouseButton1Click:Connect(function()
+    _onyx_showPage("Misc")
+end)
+
+_onyx_settingsButton.MouseButton1Click:Connect(function()
+    _onyx_showPage("Settings")
+end)
+
+buttons["Start"].Button.MouseButton1Click:Connect(function()
+    _onyx_showPage("Start")
+end)
+
+-- =========================================
+-- DRAGGING - MAIN
+-- =========================================
+
+_onyx_dragging = false
+_onyx_dragStart = nil
+_onyx_startPos = nil
+_onyx_dragInput = nil
+
+function _onyx_updateMainDrag(input)
+    local delta = input.Position - _onyx_dragStart
+    _onyx_main.Position = UDim2.new(
+        _onyx_startPos.X.Scale,
+        _onyx_startPos.X.Offset + delta.X,
+        _onyx_startPos.Y.Scale,
+        _onyx_startPos.Y.Offset + delta.Y
+    )
+end
+
+_onyx_title.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        _onyx_dragging = true
+        _onyx_dragStart = input.Position
+        _onyx_startPos = _onyx_main.Position
+
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                _onyx_dragging = false
+            end
+        end)
+    end
+end)
+
+_onyx_title.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement then
+        _onyx_dragInput = input
+    end
+end)
+
+_onyx_UserInputService.InputChanged:Connect(function(input)
+    if _onyx_dragging and input == _onyx_dragInput and input.UserInputType == Enum.UserInputType.MouseMovement then
+        _onyx_updateMainDrag(input)
+    end
+end)
+
+-- =========================================
+-- DRAGGING - ITEM PANEL
+-- =========================================
+
+_onyx_itemDragging = false
+_onyx_itemDragStart = nil
+_onyx_itemStartPos = nil
+_onyx_itemDragInput = nil
+
+function _onyx_updateItemPanelDrag(input)
+    local delta = input.Position - _onyx_itemDragStart
+    itemPanel.Position = UDim2.new(
+        _onyx_itemStartPos.X.Scale,
+        _onyx_itemStartPos.X.Offset + delta.X,
+        _onyx_itemStartPos.Y.Scale,
+        _onyx_itemStartPos.Y.Offset + delta.Y
+    )
+end
+
+_onyx_itemPanelTitle.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        _onyx_itemDragging = true
+        _onyx_itemDragStart = input.Position
+        _onyx_itemStartPos = itemPanel.Position
+
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                _onyx_itemDragging = false
+            end
+        end)
+    end
+end)
+
+_onyx_itemPanelTitle.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement then
+        _onyx_itemDragInput = input
+    end
+end)
+
+_onyx_UserInputService.InputChanged:Connect(function(input)
+    if _onyx_itemDragging and input == _onyx_itemDragInput and input.UserInputType == Enum.UserInputType.MouseMovement then
+        _onyx_updateItemPanelDrag(input)
+    end
+end)
+
+-- =========================================
+-- GLOBAL KEY INPUT
+-- =========================================
+
+spawnHotkey = Enum.KeyCode.Z
+
+_onyx_inputConnection = _onyx_UserInputService.InputBegan:Connect(function(input, gameProcessedEvent)
+    if input.UserInputType ~= Enum.UserInputType.Keyboard then
+        return
+    end
+
+    if _onyx_waitingForOpenKey then
+        if input.KeyCode ~= Enum.KeyCode.Unknown then
+            _onyx_openHotkey = input.KeyCode
+            _onyx_waitingForOpenKey = false
+            _onyx_openKeyButton.Text = _onyx_openHotkey.Name
+            _onyx_openKeyStroke.Color = _onyx_currentTheme.Border
+        end
+        return
+    end
+
+    if _onyx_waitingForSpeedKey then
+        if input.KeyCode ~= Enum.KeyCode.Unknown then
+            _onyx_speedKey = input.KeyCode
+            _onyx_waitingForSpeedKey = false
+            _onyx_updateSpeedKeyText()
+            _onyx_speedKeyStroke.Color = Color3.fromRGB(55, 58, 80)
+        end
+        return
+    end
+
+    if input.KeyCode == _onyx_openHotkey and not gameProcessedEvent then
+        _onyx_setMainVisible(not _onyx_main.Visible)
+        return
+    end
+
+    if input.KeyCode == spawnHotkey and not gameProcessedEvent then
+        _onyx_flyToSpawn()
+        return
+    end
+
+    if input.KeyCode == _onyx_speedKey and not gameProcessedEvent then
+        _onyx_toggleSpeed()
+    end
+end)
+
+-- =========================================
+-- MINIMIZE MAIN
+-- =========================================
+
+_onyx_minimized = false
+
+_onyx_minimize.MouseButton1Click:Connect(function()
+    _onyx_minimized = not _onyx_minimized
+    _onyx_sidebar.Visible = not _onyx_minimized
+    _onyx_content.Visible = not _onyx_minimized
+
+    if _onyx_minimized then
+        _onyx_main.Size = UDim2.fromOffset(720, 32)
+        _onyx_minimize.Text = "+"
+    else
+        _onyx_main.Size = UDim2.fromOffset(720, 390)
+        _onyx_minimize.Text = "−"
+    end
+end)
+
+-- =========================================
+-- CLOSE
+-- =========================================
+
+_onyx_closing = false
+
+function _onyx_animateMainClose()
+    local closeTweens = {}
+    local targetSize = UDim2.fromOffset(640, 350)
+    local targetPosition = UDim2.new(0.5, -320, 0.5, -175)
+
+    for _, object in ipairs(_onyx_main:GetDescendants()) do
+        if object:IsA("TextLabel") or object:IsA("TextButton") then
+            table.insert(closeTweens, _onyx_TweenService:Create(
+                object,
+                TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.In),
+                { TextTransparency = 1 }
+            ))
+        elseif object:IsA("UIStroke") then
+            table.insert(closeTweens, _onyx_TweenService:Create(
+                object,
+                TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.In),
+                { Transparency = 1 }
+            ))
+        end
+    end
+
+    for _, tween in ipairs(closeTweens) do
+        tween:Play()
+    end
+
+    local sizeTween = _onyx_TweenService:Create(
+        _onyx_main,
+        TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.In),
+        {
+            Size = targetSize,
+            Position = targetPosition,
+            BackgroundTransparency = 1,
+        }
+    )
+    sizeTween:Play()
+    sizeTween.Completed:Wait()
+end
+
+function _onyx_closeGui()
+    if _onyx_closing then
+        return
+    end
+
+    _onyx_closing = true
+
+    if _onyx_speedEnabled then
+        _onyx_stopSpeed()
+    end
+    if _onyx_playerESPEnabled then
+        _onyx_stopPlayerESP()
+    end
+    if _onyx_itemESPEnabled then
+        _onyx_stopItemESP()
+    end
+    if _onyx_autoStrongEnabled then
+        _onyx_stopAutoStrong()
+    end
+    if _onyx_antiAFKEnabled then
+        _onyx_stopAntiAFK()
+    end
+    _onyx_stopItemTP()
+    _onyx_itemTPPanel.Visible = false
+
+    if _onyx_speedHeartbeat then
+        _onyx_speedHeartbeat:Disconnect()
+        _onyx_speedHeartbeat = nil
+    end
+
+    if _onyx_playerESPHeartbeat then
+        _onyx_playerESPHeartbeat:Disconnect()
+    end
+
+    for _, connection in ipairs(_onyx_playerESPConnections) do
+        connection:Disconnect()
+    end
+    table.clear(_onyx_playerESPConnections)
+
+    if _onyx_inputConnection then
+        _onyx_inputConnection:Disconnect()
+        _onyx_inputConnection = nil
+    end
+
+    if _onyx_itemChildConnection then
+        _onyx_itemChildConnection:Disconnect()
+        _onyx_itemChildConnection = nil
+    end
+
+    if _onyx_itemDescendantConnection then
+        _onyx_itemDescendantConnection:Disconnect()
+        _onyx_itemDescendantConnection = nil
+    end
+
+    if _onyx_itemRefreshConnection then
+        task.cancel(_onyx_itemRefreshConnection)
+        _onyx_itemRefreshConnection = nil
+    end
+
+    if _onyx_main.Visible then
+        _onyx_animateMainClose()
+    end
+
+    _onyx_gui:Destroy()
+end
+
+_onyx_close.MouseButton1Click:Connect(_onyx_closeGui)
+
+-- =========================================
+-- START PAGE + LOADING SCREEN
+-- =========================================
+
+_onyx_loadingFrame = nil
+_onyx_loadingAvatar = nil
+
+function _onyx_setupStartAndLoading()
+    local startPage = _onyx_pages["Start"]
+    _onyx_pageTitle(startPage, "Start")
+
+    local function makeInfoCard(parent, x, y, width, height)
+        local frame = Instance.new("Frame")
+        frame.Size = UDim2.fromOffset(width, height)
+        frame.Position = UDim2.fromOffset(x, y)
+        frame.BackgroundColor3 = Color3.fromRGB(11, 12, 21)
+        frame.BorderSizePixel = 0
+        frame.Parent = parent
+
+        local frameCorner = Instance.new("UICorner")
+        frameCorner.CornerRadius = UDim.new(0, 6)
+        frameCorner.Parent = frame
+
+        local frameStroke = Instance.new("UIStroke")
+        frameStroke.Color = Color3.fromRGB(62, 66, 90)
+        frameStroke.Thickness = 1
+        frameStroke.Parent = frame
+
+        return frame
+    end
+
+    local creatorCard = makeInfoCard(startPage, 12, 48, 245, 104)
+    local creatorTitle = Instance.new("TextLabel")
+    creatorTitle.Size = UDim2.new(1, -20, 0, 24)
+    creatorTitle.Position = UDim2.fromOffset(10, 8)
+    creatorTitle.BackgroundTransparency = 1
+    creatorTitle.Text = "CREATOR"
+    creatorTitle.TextColor3 = Color3.fromRGB(125, 130, 148)
+    creatorTitle.TextSize = 9
+    creatorTitle.Font = Enum.Font.GothamMedium
+    creatorTitle.TextXAlignment = Enum.TextXAlignment.Left
+    creatorTitle.Parent = creatorCard
+
+    local creatorName = Instance.new("TextLabel")
+    creatorName.Size = UDim2.new(1, -20, 0, 28)
+    creatorName.Position = UDim2.fromOffset(10, 33)
+    creatorName.BackgroundTransparency = 1
+    creatorName.Text = "Bloxballon002"
+    creatorName.TextColor3 = Color3.fromRGB(235, 240, 250)
+    creatorName.TextSize = 14
+    creatorName.Font = Enum.Font.GothamMedium
+    creatorName.TextXAlignment = Enum.TextXAlignment.Left
+    creatorName.Parent = creatorCard
+
+    local creatorHandle = Instance.new("TextLabel")
+    creatorHandle.Size = UDim2.new(1, -20, 0, 22)
+    creatorHandle.Position = UDim2.fromOffset(10, 66)
+    creatorHandle.BackgroundTransparency = 1
+    creatorHandle.Text = "@Bloxballon002"
+    creatorHandle.TextColor3 = Color3.fromRGB(130, 165, 205)
+    creatorHandle.TextSize = 11
+    creatorHandle.Font = Enum.Font.Gotham
+    creatorHandle.TextXAlignment = Enum.TextXAlignment.Left
+    creatorHandle.Parent = creatorCard
+
+    local profileCard = makeInfoCard(startPage, 269, 48, 332, 104)
+
+    local avatar = Instance.new("ImageLabel")
+    avatar.Size = UDim2.fromOffset(70, 70)
+    avatar.Position = UDim2.fromOffset(12, 17)
+    avatar.BackgroundColor3 = Color3.fromRGB(18, 20, 30)
+    avatar.BorderSizePixel = 0
+    avatar.Parent = profileCard
+
+    local avatarCorner = Instance.new("UICorner")
+    avatarCorner.CornerRadius = UDim.new(1, 0)
+    avatarCorner.Parent = avatar
+
+    local avatarStroke = Instance.new("UIStroke")
+    avatarStroke.Color = Color3.fromRGB(75, 80, 115)
+    avatarStroke.Thickness = 1
+    avatarStroke.Parent = avatar
+
+    local avatarImage
+    local avatarOk = pcall(function()
+        avatarImage = _onyx_Players:GetUserThumbnailAsync(
+            _onyx_player.UserId,
+            Enum.ThumbnailType.HeadShot,
+            Enum.ThumbnailSize.Size100x100
+        )
+    end)
+    if avatarOk and avatarImage then
+        avatar.Image = avatarImage
+    end
+
+    local profileTitle = Instance.new("TextLabel")
+    profileTitle.Size = UDim2.new(1, -96, 0, 20)
+    profileTitle.Position = UDim2.fromOffset(94, 11)
+    profileTitle.BackgroundTransparency = 1
+    profileTitle.Text = "PLAYER"
+    profileTitle.TextColor3 = Color3.fromRGB(125, 130, 148)
+    profileTitle.TextSize = 9
+    profileTitle.Font = Enum.Font.GothamMedium
+    profileTitle.TextXAlignment = Enum.TextXAlignment.Left
+    profileTitle.Parent = profileCard
+
+    local profileName = Instance.new("TextLabel")
+    profileName.Size = UDim2.new(1, -96, 0, 23)
+    profileName.Position = UDim2.fromOffset(94, 31)
+    profileName.BackgroundTransparency = 1
+    profileName.Text = _onyx_player.Name
+    profileName.TextColor3 = Color3.fromRGB(235, 240, 250)
+    profileName.TextSize = 13
+    profileName.Font = Enum.Font.GothamMedium
+    profileName.TextXAlignment = Enum.TextXAlignment.Left
+    profileName.TextTruncate = Enum.TextTruncate.AtEnd
+    profileName.Parent = profileCard
+
+    local profileHandle = Instance.new("TextLabel")
+    profileHandle.Size = UDim2.new(1, -96, 0, 20)
+    profileHandle.Position = UDim2.fromOffset(94, 53)
+    profileHandle.BackgroundTransparency = 1
+    profileHandle.Text = "@" .. _onyx_player.Name
+    profileHandle.TextColor3 = Color3.fromRGB(130, 165, 205)
+    profileHandle.TextSize = 10
+    profileHandle.Font = Enum.Font.Gotham
+    profileHandle.TextXAlignment = Enum.TextXAlignment.Left
+    profileHandle.TextTruncate = Enum.TextTruncate.AtEnd
+    profileHandle.Parent = profileCard
+
+    local displayName = Instance.new("TextLabel")
+    displayName.Size = UDim2.new(1, -96, 0, 18)
+    displayName.Position = UDim2.fromOffset(94, 75)
+    displayName.BackgroundTransparency = 1
+    displayName.Text = "Display: " .. _onyx_player.DisplayName
+    displayName.TextColor3 = Color3.fromRGB(115, 120, 138)
+    displayName.TextSize = 9
+    displayName.Font = Enum.Font.Gotham
+    displayName.TextXAlignment = Enum.TextXAlignment.Left
+    displayName.TextTruncate = Enum.TextTruncate.AtEnd
+    displayName.Parent = profileCard
+
+    local featureCard = makeInfoCard(startPage, 12, 164, 589, 160)
+    local featureTitle = Instance.new("TextLabel")
+    featureTitle.Size = UDim2.new(1, -20, 0, 25)
+    featureTitle.Position = UDim2.fromOffset(10, 8)
+    featureTitle.BackgroundTransparency = 1
+    featureTitle.Text = "ONYXERHUB--HOLE"
+    featureTitle.TextColor3 = Color3.fromRGB(210, 215, 228)
+    featureTitle.TextSize = 11
+    featureTitle.Font = Enum.Font.GothamMedium
+    featureTitle.TextXAlignment = Enum.TextXAlignment.Left
+    featureTitle.Parent = featureCard
+
+    local launchLabel = Instance.new("TextLabel")
+    launchLabel.Size = UDim2.new(1, -20, 0, 18)
+    launchLabel.Position = UDim2.fromOffset(10, 30)
+    launchLabel.BackgroundTransparency = 1
+    launchLabel.Text = "Script started: " .. _onyx_scriptLaunchTime
+    launchLabel.TextColor3 = Color3.fromRGB(125, 165, 205)
+    launchLabel.TextSize = 10
+    launchLabel.Font = Enum.Font.GothamMedium
+    launchLabel.TextXAlignment = Enum.TextXAlignment.Left
+    launchLabel.Parent = featureCard
+
+    local featureInfo = Instance.new("TextLabel")
+    featureInfo.Size = UDim2.new(1, -20, 1, -60)
+    featureInfo.Position = UDim2.fromOffset(10, 52)
+    featureInfo.BackgroundTransparency = 1
+    featureInfo.Text = "Speed\nPlayer ESP\nESP Items — one marker per item type\nItem Teleport — 200 studs/s + NoClip only during flight\nSpawn Teleport — current in-game WalkSpeed + Z hotkey\nAuto Strong — automatically uses the strength tool\nCreator: @Bloxballon002"
+    featureInfo.TextColor3 = Color3.fromRGB(145, 150, 168)
+    featureInfo.TextSize = 10
+    featureInfo.Font = Enum.Font.Gotham
+    featureInfo.TextXAlignment = Enum.TextXAlignment.Left
+    featureInfo.TextYAlignment = Enum.TextYAlignment.Top
+    featureInfo.Parent = featureCard
+
+    -- Keep the main interface hidden until the loading screen finishes.
+    _onyx_main.Visible = false
+
+    local loading = Instance.new("Frame")
+    loading.Name = "Loading"
+    loading.AnchorPoint = Vector2.new(0.5, 0.5)
+    loading.Position = UDim2.fromScale(0.5, 0.5)
+    loading.Size = UDim2.fromOffset(430, 270)
+    loading.BackgroundColor3 = Color3.fromRGB(8, 9, 16)
+    loading.BorderSizePixel = 0
+    loading.Parent = _onyx_gui
+    _onyx_loadingFrame = loading
+
+    local loadingCorner = Instance.new("UICorner")
+    loadingCorner.CornerRadius = UDim.new(0, 8)
+    loadingCorner.Parent = loading
+
+    local loadingStroke = Instance.new("UIStroke")
+    loadingStroke.Color = Color3.fromRGB(68, 72, 96)
+    loadingStroke.Thickness = 1
+    loadingStroke.Parent = loading
+
+    local loadingAvatar = Instance.new("ImageLabel")
+    loadingAvatar.Name = "LoadingAvatar"
+    loadingAvatar.Size = UDim2.fromOffset(52, 52)
+    loadingAvatar.Position = UDim2.new(0.5, -26, 0, 14)
+    loadingAvatar.BackgroundTransparency = 1
+    loadingAvatar.Image = ""
+    loadingAvatar.Parent = loading
+
+    local loadingAvatarCorner = Instance.new("UICorner")
+    loadingAvatarCorner.CornerRadius = UDim.new(1, 0)
+    loadingAvatarCorner.Parent = loadingAvatar
+
+    local loadingAvatarStroke = Instance.new("UIStroke")
+    loadingAvatarStroke.Color = Color3.fromRGB(72, 76, 100)
+    loadingAvatarStroke.Thickness = 1
+    loadingAvatarStroke.Parent = loadingAvatar
+
+    pcall(function()
+        local image = _onyx_Players:GetUserThumbnailAsync(_onyx_player.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size100x100)
+        loadingAvatar.Image = image
+    end)
+    _onyx_loadingAvatar = loadingAvatar
+
+    local loadingPercent = Instance.new("TextLabel")
+    loadingPercent.Size = UDim2.new(1, -30, 0, 38)
+    loadingPercent.Position = UDim2.fromOffset(15, 78)
+    loadingPercent.BackgroundTransparency = 1
+    loadingPercent.Text = "0%"
+    loadingPercent.TextColor3 = Color3.fromRGB(230, 235, 245)
+    loadingPercent.TextSize = 25
+    loadingPercent.Font = Enum.Font.GothamMedium
+    loadingPercent.TextXAlignment = Enum.TextXAlignment.Center
+    loadingPercent.Parent = loading
+
+    local loadingTitle = Instance.new("TextLabel")
+    loadingTitle.Size = UDim2.new(1, -30, 0, 26)
+    loadingTitle.Position = UDim2.fromOffset(15, 122)
+    loadingTitle.BackgroundTransparency = 1
+    loadingTitle.Text = "OnyxerHUB--Hole"
+    loadingTitle.TextColor3 = Color3.fromRGB(195, 200, 215)
+    loadingTitle.TextSize = 15
+    loadingTitle.Font = Enum.Font.GothamMedium
+    loadingTitle.TextXAlignment = Enum.TextXAlignment.Center
+    loadingTitle.Parent = loading
+
+    local loadingAuthor = Instance.new("TextLabel")
+    loadingAuthor.Size = UDim2.new(1, -30, 0, 20)
+    loadingAuthor.Position = UDim2.fromOffset(15, 148)
+    loadingAuthor.BackgroundTransparency = 1
+    loadingAuthor.Text = "by Kurkupa"
+    loadingAuthor.TextColor3 = Color3.fromRGB(120, 125, 142)
+    loadingAuthor.TextSize = 10
+    loadingAuthor.Font = Enum.Font.Gotham
+    loadingAuthor.TextXAlignment = Enum.TextXAlignment.Center
+    loadingAuthor.Parent = loading
+
+    local loadBarBack = Instance.new("Frame")
+    loadBarBack.Size = UDim2.new(1, -50, 0, 6)
+    loadBarBack.Position = UDim2.fromOffset(25, 188)
+    loadBarBack.BackgroundColor3 = Color3.fromRGB(20, 22, 32)
+    loadBarBack.BorderSizePixel = 0
+    loadBarBack.Parent = loading
+
+    local loadBarBackCorner = Instance.new("UICorner")
+    loadBarBackCorner.CornerRadius = UDim.new(1, 0)
+    loadBarBackCorner.Parent = loadBarBack
+
+    local loadBar = Instance.new("Frame")
+    loadBar.Size = UDim2.new(0, 0, 1, 0)
+    loadBar.BackgroundColor3 = Color3.fromRGB(85, 150, 220)
+    loadBar.BorderSizePixel = 0
+    loadBar.Parent = loadBarBack
+
+    local loadBarCorner = Instance.new("UICorner")
+    loadBarCorner.CornerRadius = UDim.new(1, 0)
+    loadBarCorner.Parent = loadBar
+
+    local loadingHint = Instance.new("TextLabel")
+    loadingHint.Size = UDim2.new(1, -30, 0, 18)
+    loadingHint.Position = UDim2.fromOffset(15, 207)
+    loadingHint.BackgroundTransparency = 1
+    loadingHint.Text = "Loading modules..."
+    loadingHint.TextColor3 = Color3.fromRGB(95, 100, 118)
+    loadingHint.TextSize = 9
+    loadingHint.Font = Enum.Font.Gotham
+    loadingHint.TextXAlignment = Enum.TextXAlignment.Center
+    loadingHint.Parent = loading
+
+    local rng = Random.new()
+
+    local function playRange(fromPercent, toPercent, totalSeconds)
+        local weights = {}
+        local weightSum = 0
+        local count = toPercent - fromPercent
+
+        for index = 1, count do
+            local weight = rng:NextNumber(0.55, 1.45)
+            weights[index] = weight
+            weightSum = weightSum + weight
+        end
+
+        for index = 1, count do
+            task.wait(totalSeconds * weights[index] / weightSum)
+            local value = fromPercent + index
+            loadingPercent.Text = tostring(value) .. "%"
+            loadBar.Size = UDim2.new(value / 100, 0, 1, 0)
+        end
+    end
+
+    task.spawn(function()
+        _onyx_showPage("Start")
+        loadingPercent.Text = "0%"
+        loadBar.Size = UDim2.new(0, 0, 1, 0)
+
+        playRange(0, 30, 5)
+        playRange(30, 70, 10)
+        playRange(70, 100, 4)
+
+        loadingPercent.Text = "Full load"
+        loadBar.Size = UDim2.fromScale(1, 1)
+        loadingHint.Text = "Ready"
+
+        task.wait(3)
+
+        if loading.Parent then
+            loading:Destroy()
+            _onyx_loadingFrame = nil
+            _onyx_halloweenLoadingDecor = nil
+        end
+
+        _onyx_main.Visible = true
+        _onyx_showPage("Start")
+
+        local normalSize = UDim2.fromOffset(720, 390)
+        local normalPosition = UDim2.new(0.5, -360, 0.5, -195)
+
+        _onyx_main.Size = UDim2.fromOffset(640, 350)
+        _onyx_main.Position = UDim2.new(0.5, -320, 0.5, -175)
+        _onyx_main.BackgroundTransparency = 1
+
+        for _, object in ipairs(_onyx_main:GetDescendants()) do
+            if object:IsA("TextLabel") or object:IsA("TextButton") then
+                object.TextTransparency = 1
+            elseif object:IsA("UIStroke") then
+                object.Transparency = 1
+            end
+        end
+
+        local openTween = _onyx_TweenService:Create(
+            _onyx_main,
+            TweenInfo.new(0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
+            {
+                Size = normalSize,
+                Position = normalPosition,
+                BackgroundTransparency = 0,
+            }
+        )
+        openTween:Play()
+
+        task.delay(0.08, function()
+            for _, object in ipairs(_onyx_main:GetDescendants()) do
+                if object:IsA("TextLabel") or object:IsA("TextButton") then
+                    _onyx_TweenService:Create(
+                        object,
+                        TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+                        { TextTransparency = 0 }
+                    ):Play()
+                elseif object:IsA("UIStroke") then
+                    _onyx_TweenService:Create(
+                        object,
+                        TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+                        { Transparency = 0 }
+                    ):Play()
+                end
+            end
+        end)
+    end)
+end
+
+
+function _onyx_themeKey(c)
+    return string.format("%d,%d,%d", math.floor(c.R * 255 + 0.5), math.floor(c.G * 255 + 0.5), math.floor(c.B * 255 + 0.5))
+end
+
+function _onyx_tagThemeRoles()
+    local backgroundMap = {
+        ["8,9,16"] = "MainBg", ["11,12,21"] = "SurfaceBg", ["7,8,14"] = "ContentBg",
+        ["14,15,24"] = "PanelRowBg", ["10,11,18"] = "ScrollBg", ["18,20,30"] = "ButtonBg",
+        ["25,27,40"] = "ActiveBg", ["20,22,32"] = "BarBg", ["85,150,220"] = "AccentBg",
+    }
+    local textMap = {
+        ["220,220,230"] = "PrimaryText", ["190,190,205"] = "SecondaryText", ["130,130,145"] = "MutedText",
+        ["135,137,150"] = "SidebarText", ["225,225,235"] = "ActiveText", ["145,145,160"] = "ToggleText",
+        ["205,205,218"] = "ButtonText", ["215,220,230"] = "ButtonText",
+    }
+
+    for _, object in ipairs(_onyx_gui:GetDescendants()) do
+        if object:GetAttribute("OnyxThemeIgnore") then continue end
+        if object:IsA("GuiObject") then
+            local role = backgroundMap[_onyx_themeKey(object.BackgroundColor3)]
+            if role then object:SetAttribute("OnyxThemeRole", role) end
+        end
+        if object:IsA("TextLabel") or object:IsA("TextButton") then
+            local textRole = textMap[_onyx_themeKey(object.TextColor3)]
+            if textRole then object:SetAttribute("OnyxTextRole", textRole) end
+        end
+    end
+end
+
+function _onyx_buildThemePicker()
+    _onyx_themePicker = Instance.new("Frame")
+    _onyx_themePicker.Name = "UIColorPicker"
+    _onyx_themePicker.Size = UDim2.fromOffset(360, 350)
+    _onyx_themePicker.Position = UDim2.new(0.5, -180, 0.5, -175)
+    _onyx_themePicker.BackgroundColor3 = Color3.fromRGB(8, 9, 16)
+    _onyx_themePicker.BorderSizePixel = 0
+    _onyx_themePicker.Visible = false
+    _onyx_themePicker.ZIndex = 50
+    _onyx_themePicker.Parent = _onyx_gui
+    _onyx_themePicker:SetAttribute("OnyxThemeIgnore", true)
+
+    local pickerCorner = Instance.new("UICorner")
+    pickerCorner.CornerRadius = UDim.new(0, 8)
+    pickerCorner.Parent = _onyx_themePicker
+
+    local pickerStroke = Instance.new("UIStroke")
+    pickerStroke.Name = "PickerStroke"
+    pickerStroke.Color = Color3.fromRGB(72, 76, 100)
+    pickerStroke.Thickness = 1
+    pickerStroke.Parent = _onyx_themePicker
+    pickerStroke:SetAttribute("OnyxThemeIgnore", true)
+
+    local pickerTitle = Instance.new("TextLabel")
+    pickerTitle.Size = UDim2.new(1, -84, 0, 36)
+    pickerTitle.Position = UDim2.fromOffset(12, 0)
+    pickerTitle.BackgroundTransparency = 1
+    pickerTitle.Name = "PickerTitle"
+    pickerTitle.Text = "UI Colors"
+    pickerTitle.TextColor3 = Color3.fromRGB(220, 220, 230)
+    pickerTitle.TextSize = 13
+    pickerTitle.Font = Enum.Font.GothamMedium
+    pickerTitle.TextXAlignment = Enum.TextXAlignment.Left
+    pickerTitle.ZIndex = 51
+    pickerTitle.Parent = _onyx_themePicker
+
+    local pickerHint = Instance.new("TextLabel")
+    pickerHint.Size = UDim2.new(1, -24, 0, 24)
+    pickerHint.Position = UDim2.fromOffset(12, 34)
+    pickerHint.BackgroundTransparency = 1
+    pickerHint.Name = "PickerHint"
+    pickerHint.Text = "Only one theme can be ON"
+    pickerHint.TextColor3 = Color3.fromRGB(130, 130, 145)
+    pickerHint.TextSize = 9
+    pickerHint.Font = Enum.Font.Gotham
+    pickerHint.TextXAlignment = Enum.TextXAlignment.Left
+    pickerHint.ZIndex = 51
+    pickerHint.Parent = _onyx_themePicker
+
+    local pickerClose = Instance.new("TextButton")
+    pickerClose.Size = UDim2.fromOffset(32, 32)
+    pickerClose.Position = UDim2.new(1, -34, 0, 0)
+    pickerClose.BackgroundTransparency = 1
+    pickerClose.Name = "PickerClose"
+    pickerClose.Text = "×"
+    pickerClose.TextColor3 = Color3.fromRGB(180, 180, 195)
+    pickerClose.TextSize = 20
+    pickerClose.Font = Enum.Font.GothamMedium
+    pickerClose.AutoButtonColor = false
+    pickerClose.ZIndex = 51
+    pickerClose.Parent = _onyx_themePicker
+    pickerClose.MouseButton1Click:Connect(function()
+        _onyx_themePicker.Visible = false
+        _onyx_uiColorsButton.Text = "OPEN"
+    end)
+
+    local themeList = Instance.new("ScrollingFrame")
+    themeList.Name = "ThemeList"
+    themeList.Size = UDim2.new(1, -24, 1, -78)
+    themeList.Position = UDim2.fromOffset(12, 66)
+    themeList.BackgroundColor3 = _onyx_currentTheme.ScrollBg
+    themeList.BackgroundTransparency = 0.08
+    themeList.BorderSizePixel = 0
+    themeList.ScrollBarThickness = 4
+    themeList.ScrollBarImageColor3 = _onyx_currentTheme.Accent
+    themeList.ScrollBarImageTransparency = 0.1
+    themeList.CanvasSize = UDim2.new(0, 0, 0, 0)
+    themeList.ScrollingDirection = Enum.ScrollingDirection.Y
+    themeList.ZIndex = 51
+    themeList.Parent = _onyx_themePicker
+    themeList:SetAttribute("OnyxThemeIgnore", true)
+
+    local themeListCorner = Instance.new("UICorner")
+    themeListCorner.CornerRadius = UDim.new(0, 6)
+    themeListCorner.Parent = themeList
+    themeListCorner:SetAttribute("OnyxThemeIgnore", true)
+
+    local listLayout = Instance.new("UIListLayout")
+    listLayout.Padding = UDim.new(0, 6)
+    listLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    listLayout.Parent = themeList
+
+    local themeOrder = {"Halloween", "Black", "White", "Red", "Purple"}
+    for index, themeName in ipairs(themeOrder) do
+        local theme = _onyx_themes[themeName]
+        local row = Instance.new("Frame")
+        row.Size = UDim2.new(1, 0, 0, 38)
+        row.BackgroundColor3 = Color3.fromRGB(14, 15, 24)
+        row.BorderSizePixel = 0
+        row.LayoutOrder = index
+        row.ZIndex = 52
+        row.Parent = themeList
+
+        local rowCorner = Instance.new("UICorner")
+        rowCorner.CornerRadius = UDim.new(0, 5)
+        rowCorner.Parent = row
+
+        local rowStroke = Instance.new("UIStroke")
+        rowStroke.Color = Color3.fromRGB(55, 58, 80)
+        rowStroke.Thickness = 1
+        rowStroke.Parent = row
+        rowStroke:SetAttribute("OnyxThemeIgnore", true)
+
+        local swatch = Instance.new("Frame")
+        swatch.Size = UDim2.fromOffset(20, 20)
+        swatch.Position = UDim2.fromOffset(10, 9)
+        swatch.BackgroundColor3 = theme.Accent
+        swatch.BorderSizePixel = 0
+        swatch.ZIndex = 53
+        swatch.Parent = row
+        swatch:SetAttribute("OnyxThemeIgnore", true)
+
+        local swatchCorner = Instance.new("UICorner")
+        swatchCorner.CornerRadius = UDim.new(0, 4)
+        swatchCorner.Parent = swatch
+
+        local label = Instance.new("TextLabel")
+        label.Size = UDim2.new(1, -110, 1, 0)
+        label.Position = UDim2.fromOffset(40, 0)
+        label.BackgroundTransparency = 1
+        label.Text = themeName
+        label.TextColor3 = Color3.fromRGB(220, 220, 230)
+        label.TextSize = 10
+        label.Font = Enum.Font.GothamMedium
+        label.TextXAlignment = Enum.TextXAlignment.Left
+        label.ZIndex = 53
+        label.Parent = row
+
+        local button = Instance.new("TextButton")
+        button.Size = UDim2.fromOffset(64, 24)
+        button.Position = UDim2.new(1, -74, 0.5, -12)
+        button.BackgroundColor3 = Color3.fromRGB(18, 20, 30)
+        button.BorderSizePixel = 0
+        button.Text = "OFF"
+        button.TextColor3 = Color3.fromRGB(145, 145, 160)
+        button.TextSize = 9
+        button.Font = Enum.Font.GothamMedium
+        button.AutoButtonColor = false
+        button.ZIndex = 53
+        button.Parent = row
+
+        local buttonCorner = Instance.new("UICorner")
+        buttonCorner.CornerRadius = UDim.new(0, 4)
+        buttonCorner.Parent = button
+
+        local buttonStroke = Instance.new("UIStroke")
+        buttonStroke.Color = Color3.fromRGB(55, 58, 80)
+        buttonStroke.Thickness = 1
+        buttonStroke.Parent = button
+
+        _onyx_themePickerButtons[themeName] = {row = row, rowStroke = rowStroke, button = button, stroke = buttonStroke}
+        button.MouseButton1Click:Connect(function() _onyx_applyTheme(themeName) end)
+    end
+
+    local function updateThemeListCanvas()
+        themeList.CanvasSize = UDim2.fromOffset(0, listLayout.AbsoluteContentSize.Y + 8)
+    end
+    listLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(updateThemeListCanvas)
+    updateThemeListCanvas()
+
+    _onyx_uiColorsButton.MouseButton1Click:Connect(function()
+        _onyx_themePicker.Visible = not _onyx_themePicker.Visible
+        _onyx_uiColorsButton.Text = _onyx_themePicker.Visible and "HIDE" or "OPEN"
+    end)
+end
+
+_onyx_setupStartAndLoading()
+_onyx_buildThemePicker()
+_onyx_tagThemeRoles()
+_onyx_applyTheme("Halloween")
+_onyx_showPage("Start")
+_onyx_updateOpenButton()
